@@ -331,7 +331,8 @@ def map_plot(start,end):
 
 ## Premsie
 def premise( start
-            ,end):
+            ,end
+            ,_subtitle=''):
     
     df=multi_year.loc[ (multi_year['NIBRSDescription'].isin(violent_crimes))
                           &(multi_year['RMSOccurrenceDate']>=f'''{start}/01/2023''')
@@ -345,10 +346,15 @@ def premise( start
     agg_df.plot( kind='bar'
                 ,x='Premise'
                 ,figsize=(12,6)
-                ,title=f'''Violent Incident Counts By Premise''')
+                ,title=f'''Violent Incident Counts By Premise{_subtitle}''')
       
     print( 'Top 5 Premises of Violent Crimes\n'
           ,agg_df[['Premise','OffenseCount']]\
               .sort_values('OffenseCount',ascending=False)['Premise'].head(5))  
 
-premise('05','06')
+premise('01','02',_subtitle='\nJanuary 2023')
+premise('02','03',_subtitle='\nFebruray 2023')
+premise('03','04',_subtitle='\nMarch 2023')
+premise('04','05',_subtitle='\nApril 2023')
+premise('05','06',_subtitle='\nMay 2023')
+
