@@ -18,6 +18,7 @@ import scipy.stats
 from datetime import datetime
 from datetime import date
 import sqlite3
+import json
 
 print(datetime.now())
 print((datetime.now() - pd.DateOffset(months=3)).strftime("%m/%d/%Y"))
@@ -36,12 +37,15 @@ import scipy
 import geopandas as gpd
 import geodatasets
 import folium
+from folium.features import DivIcon
 import re
 import branca.colormap as cm
+from shapely.geometry import shape, GeometryCollection, Point
 
 #Set some parameters
 where_the_data_is='C:/Users/chris/Documents/Random_Nextdoor/My_Crime_Analysis - 05.04.23/Group/Data/HPD_NIBRS/'
 
+district_list=['A','B','C','D','E','F','G','H','I','J','K']
 bydim='Overall'
 group_dims=['NIBRSDescription',bydim]
 crimes=[ 'Aggravated Assault'
@@ -73,8 +77,9 @@ all_colors=[ 'red'
             ,'aqua'
             ,'violet'
             ,'wheat'
-            ,'darkornage']
+            ,'darkorange']
 
+geo_data=json.load(open('C:/Users/chris/Downloads/COH_ADMINISTRATIVE_BOUNDARY_-_MIL.geojson', 'r'))
 
 # Reuseable function                    
 def nibrs_trendx( _inbound
@@ -188,10 +193,22 @@ def YTD( _inbound
                       ,figsize=(12,6)
                       ,fontsize=16
                       ,rot=0
-                      ,title=f'''Year-To-Date Violent, 2019,2022,2023\n{_subtitle}'''
+                      ,title=f'''Year-To-Date, 2019,2022,2023\n{_subtitle}'''
                       )          
     return comp_ytds
 
+def assign_district(_long,_lat):
+    _point=Point(_long ,_lat)
+    
+    for feature in geo_data['features']:
+    
+        polygon = shape(feature['geometry'])
+    
+        if polygon.contains(_point):
+            # print ('Found containing polygon:')
+            # print(feature['properties']['DISTRICT'])
+            out=feature['properties']['DISTRICT']    
+            return out    
 # Import Data
 sql_con = sqlite3.connect("C:/Users/chris/Documents/Random_Nextdoor/My_Crime_Analysis - 05.04.23/Group/Data/incoming_data.sqlite")
  
@@ -199,7 +216,6 @@ multi_year=pd.read_sql_query('''select * from all_years_incoming''', sql_con)
 multi_year['RMSOccurrenceDate']=pd.to_datetime(multi_year['RMSOccurrenceDate'])
 multi_year['year_mon']=multi_year['year_mon'].astype("datetime64[M]")
 multi_year.info()
-
 
 all_cats=pd.read_sql_query('''select * from categories''', sql_con)
 all_zips=pd.read_sql_query('''select * from zips''', sql_con)     

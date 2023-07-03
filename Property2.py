@@ -14,12 +14,12 @@ property_crimes=[ 'Burglary, Breaking and Entering'
                  ,'Motor vehicle theft'
                  ,'Theft from motor vehicle'
                  ,'Theft of motor vehicle parts or accessory'
-                 ,'Arson']
+                 ]
 
 trend=multi_year.loc[ (multi_year['NIBRSDescription'].isin(property_crimes))]
 trend['NIBRSDescription']='property'
 
-ytd_over=YTD(trend,'property')
+ytd_over=YTD(trend,'property',_subtitle='Property Crime')
 
 nibrs_trendx( trend 
              ,'property'

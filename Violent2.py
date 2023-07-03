@@ -352,6 +352,8 @@ def premise( start
           ,agg_df[['Premise','OffenseCount']]\
               .sort_values('OffenseCount',ascending=False)['Premise'].head(5))  
 
+
+
 premise('01','02',_subtitle='\nJanuary 2023')
 premise('02','03',_subtitle='\nFebruray 2023')
 premise('03','04',_subtitle='\nMarch 2023')
