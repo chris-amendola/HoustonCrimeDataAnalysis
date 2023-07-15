@@ -161,8 +161,8 @@ df_final=df_final[~df_final['geometry'].isna()]
 
 report_var='diff_prior'
 
-min_bin=df_final[report_var].min()
-max_bin=df_final[report_var].max()
+min_bin=int(df_final[report_var].min())
+max_bin=int(df_final[report_var].max())
 
 m=folium.Map(location=[ 29.7604,-95.3698]
                        ,zoom_start=11
@@ -184,7 +184,7 @@ folium.Choropleth(
             highlight=True,
             use_jenks=False,
             #bins=3,
-            bins=[min_bin,min_bin/2,0,max_bin/2,max_bin],
+            bins=[min_bin,min_bin//2,0,max_bin//2,max_bin],
             line_color='black').add_to(m) 
 
 folium.features.GeoJson(
