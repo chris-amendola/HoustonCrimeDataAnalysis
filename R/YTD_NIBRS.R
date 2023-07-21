@@ -1,13 +1,6 @@
 library(zoo)
 library(ggplot2)
-theme_update(plot.title = element_text(hjust = 0.5))
-
-group_dims<-c('NIBRSDescription','Overall')
-
-violent_crimes<-c('Aggravated Assault'
-                  ,'Forcible rape'
-                  ,'Robbery'
-                  ,'Murder, non-negligent')
+ 
 bas_yr='2019'
 pri_yr='2022'
 cur_yr='2023'
@@ -37,8 +30,6 @@ pri_agg<-crimes_filtered[ (RMSOccurrenceDate>=glue('{pri_yr}-01-01')
                           ,.(OffenseCount=sum(OffenseCount))
                           ,by=group_dims]
 
-setnames(pri_agg, "OffenseCount", glue("OffenseCount_{pri_yr}"))
-
 #2023
 cur_end_dt<-round_date(as.Date(ISOdate( year=cur_yr
                                         ,month=latest_mon
@@ -48,9 +39,37 @@ cur_agg<-crimes_filtered[ (RMSOccurrenceDate>=glue('{cur_yr}-01-01')
                            &RMSOccurrenceDate<=cur_end_dt)
                           ,.(OffenseCount=sum(OffenseCount))
                           ,by=group_dims]
-setnames(cur_agg, "OffenseCount", glue("OffenseCount_{cur_yr}"))
 
-#Assemble for comparison
+#Prepare for comparison
+setnames(bas_agg, "OffenseCount", glue("OffenseCount_bas"))
+setnames(pri_agg, "OffenseCount", glue("OffenseCount_pri"))
+setnames(cur_agg, "OffenseCount", glue("OffenseCount_cur"))
+
 comp_ytds<-bas_agg[pri_agg,on=group_dims]%>%
           .[cur_agg,on=group_dims]
-                          
+              
+comp_ytds[,'diff_pri':=OffenseCount_cur-OffenseCount_pri]
+comp_ytds[,'diff_bas':=OffenseCount_cur-OffenseCount_bas]
+
+comp_ytds[,'perc_pri':=diff_pri/OffenseCount_cur]
+comp_ytds[,'perc_bas':=diff_bas/OffenseCount_pri] 
+
+setnames( comp_ytds
+         ,c("OffenseCount_bas","OffenseCount_pri","OffenseCount_cur")
+         ,c( glue("OffenseCount_{bas_yr}")
+            ,glue("OffenseCount_{pri_yr}")
+            ,glue("OffenseCount_{cur_yr}")))
+
+#Prep for Plotting
+bas_agg[,'Year':=bas_yr]
+pri_agg[,'Year':=pri_yr]
+cur_agg[,'Year':=cur_yr]
+
+plot_prep<- rbindlist(list(bas_agg,pri_agg,cur_agg))  
+
+ggplot( data=plot_prep
+       ,aes( y=OffenseCount
+            ,x=Year
+            ,fill=Year))+
+  geom_bar( position="dodge"
+           ,stat="identity")

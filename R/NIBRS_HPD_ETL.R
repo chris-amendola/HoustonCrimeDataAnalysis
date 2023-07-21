@@ -1,8 +1,19 @@
 library("readxl")
 library("glue")
 library("tidyverse")
+library("data.table")
+
+theme_update(plot.title = element_text(hjust = 0.5))
 
 where_the_data_is<-'C:/Users/chris/Documents/Random_Nextdoor/My_Crime_Analysis - 05.04.23/Group/Data/HPD_NIBRS/'
+
+bydim<-'Overall'
+group_dims<-c('NIBRSDescription',bydim)
+
+violent_crimes<-c('Aggravated Assault'
+                  ,'Forcible rape'
+                  ,'Robbery'
+                  ,'Murder, non-negligent')
 
 baseline<-read_excel(glue('{where_the_data_is}2019_NIBRSPublicView.Jan1-Dec31.xlsx'))%>% 
           rename( OffenseCount=`Offense\r\nCount`
