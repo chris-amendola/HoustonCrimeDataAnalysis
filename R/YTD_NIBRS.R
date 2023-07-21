@@ -72,4 +72,6 @@ ggplot( data=plot_prep
             ,x=Year
             ,fill=Year))+
   geom_bar( position="dodge"
-           ,stat="identity")
+           ,stat="identity")+theme_economist() + 
+  scale_fill_manual(values=c('darkblue', 'darkgreen', 'darkred'))+
+  ggtitle("-test-")
