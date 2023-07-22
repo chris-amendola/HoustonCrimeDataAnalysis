@@ -1,9 +1,4 @@
 
-bas_yr='2019'
-pri_yr='2022'
-cur_yr='2023'
-
-latest_mon='06'
 
 crimes_filtered<-multi_year[NIBRSDescription %chin% violent_crimes]%>%
                  .[,NIBRSDescription:='Violent']
