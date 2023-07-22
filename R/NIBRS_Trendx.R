@@ -1,6 +1,3 @@
-library(zoo)
-library(ggplot2)
-library(data.table)
 
 crimes_filtered<-multi_year[NIBRSDescription %chin% violent_crimes]%>%
   .[,NIBRSDescription:='Violent']
@@ -24,7 +21,7 @@ NIBRS_Trend<- function(indata=crimes_filtered) {
         geom_hline(yintercept=end_value, linetype="dashed", color = "red")+
         geom_hline(yintercept=max_value, linetype="dashed", color = "blue")+
         theme(legend.key = element_rect(fill = "grey", colour = "black"))+
-        ylab("Rolling 12 Month Average")
+        ylab("Rolling 12 Month Average")+theme_economist()
 }
 
 NIBRS_Trend(crimes_filtered)
