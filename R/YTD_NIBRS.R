@@ -1,9 +1,8 @@
 
 
-crimes_filtered<-multi_year[NIBRSDescription %chin% violent_crimes]%>%
-                 .[,NIBRSDescription:='Violent']
-
-NIBRS_YTD<- function( bas_yr='2019'
+NIBRS_YTD<- function( indata
+                     ,title1='title1'  
+                     ,bas_yr='2019'
                      ,pri_yr='2022'
                      ,cur_yr='2023'
                      ,latest_mon='06') {
@@ -13,7 +12,7 @@ NIBRS_YTD<- function( bas_yr='2019'
                                  ,month=latest_mon
                                  ,day='28')),'month')-days(1)
     
-    bas_agg<-crimes_filtered[ (RMSOccurrenceDate>=glue('{bas_yr}-01-01')
+    bas_agg<-indata[ (RMSOccurrenceDate>=glue('{bas_yr}-01-01')
                                &RMSOccurrenceDate<=base_end_dt)
                              ,.(OffenseCount=sum(OffenseCount))
                              ,by=group_dims]
@@ -23,7 +22,7 @@ NIBRS_YTD<- function( bas_yr='2019'
                                              ,month=latest_mon
                                              ,day='28')),'month')-days(1)
     
-    pri_agg<-crimes_filtered[ (RMSOccurrenceDate>=glue('{pri_yr}-01-01')
+    pri_agg<-indata[ (RMSOccurrenceDate>=glue('{pri_yr}-01-01')
                                &RMSOccurrenceDate<=pri_end_dt)
                               ,.(OffenseCount=sum(OffenseCount))
                               ,by=group_dims]
@@ -33,7 +32,7 @@ NIBRS_YTD<- function( bas_yr='2019'
                                             ,month=latest_mon
                                             ,day='28')),'month')-days(1)
     
-    cur_agg<-crimes_filtered[ (RMSOccurrenceDate>=glue('{cur_yr}-01-01')
+    cur_agg<-indata[ (RMSOccurrenceDate>=glue('{cur_yr}-01-01')
                                &RMSOccurrenceDate<=cur_end_dt)
                               ,.(OffenseCount=sum(OffenseCount))
                               ,by=group_dims]
@@ -45,21 +44,18 @@ NIBRS_YTD<- function( bas_yr='2019'
     
     plot_prep<- rbindlist(list(bas_agg,pri_agg,cur_agg))  
     
-    ggplot( data=plot_prep
+    return(ggplot( data=plot_prep
            ,aes( y=OffenseCount
                 ,x=Year
                 ,fill=Year))+
       geom_bar( position="dodge"
                ,stat="identity")+
-      ggtitle("Year-To-Date")+
+      ggtitle(glue("Year-To-Date - {title1}"))+
       theme_economist()+
-      scale_fill_manual(values=c('darkblue', 'darkgreen', 'darkred'))
+      scale_fill_manual(values=c('darkblue', 'darkgreen', 'darkred')))
 }
 
-NIBRS_YTD()
-
-
-
+#NIBRS_YTD()
 
 #Prepare for comparison
 #setnames(bas_agg, "OffenseCount", glue("OffenseCount_bas"))
