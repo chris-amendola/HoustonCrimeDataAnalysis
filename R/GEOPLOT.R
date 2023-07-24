@@ -1,8 +1,9 @@
+loc_plot<-function( curr_month
+                   ,sup_dir=''
+                   ,geo_data=districts){}
+
 
 sf_use_s2(FALSE)
-
-districts<-st_read("C:/Users/chris/Downloads/COH_ADMINISTRATIVE_BOUNDARY_-_MIL.geojson")
-
 
 data_pre<-multi_year[  (NIBRSDescription %chin% violent_crimes)
                       &(RMSOccurrenceDate>='2023-06-01')
@@ -24,7 +25,6 @@ data$Address<-paste( data$StreetNo
                     ,data$StreetType
                     ,' '
                     ,data$Suffix)
-
 
 data$popup<-paste("<b>Incident #: </b>", data$Incident, "<br>", 
                   "<br>", "<b>Description: </b>", data$NIBRSDescription,

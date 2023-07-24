@@ -1,4 +1,17 @@
+eom<-function( month
+              ,year
+              ,base_day='28'){
+  
+  return(round_date(as.Date(ISOdate( year=year
+                              ,month=month
+                              ,day=base_day)),'month')-days(1))
+}
 
+m='06'
+y='2019'
+t<-eom(m,y)
+eom(m,y)
+eom('06','2019')
 
 NIBRS_YTD<- function( indata
                      ,title1='title1'  
@@ -8,32 +21,26 @@ NIBRS_YTD<- function( indata
                      ,latest_mon='06') {
 
     #2019
-    base_end_dt<-round_date(as.Date(ISOdate( year=bas_yr
-                                 ,month=latest_mon
-                                 ,day='28')),'month')-days(1)
+    base_end_dt<-eom(latest_mon,bas_yr)
     
     bas_agg<-indata[ (RMSOccurrenceDate>=glue('{bas_yr}-01-01')
-                               &RMSOccurrenceDate<=base_end_dt)
+                               &RMSOccurrenceDate<=as.Date(base_end_dt))
                              ,.(OffenseCount=sum(OffenseCount))
                              ,by=group_dims]
     
     #2022
-    pri_end_dt<-round_date(as.Date(ISOdate( year=pri_yr
-                                             ,month=latest_mon
-                                             ,day='28')),'month')-days(1)
+    pri_end_dt<-eom(latest_mon,pri_yr)
     
     pri_agg<-indata[ (RMSOccurrenceDate>=glue('{pri_yr}-01-01')
-                               &RMSOccurrenceDate<=pri_end_dt)
+                               &RMSOccurrenceDate<=as.Date(pri_end_dt))
                               ,.(OffenseCount=sum(OffenseCount))
                               ,by=group_dims]
     
     #2023
-    cur_end_dt<-round_date(as.Date(ISOdate( year=cur_yr
-                                            ,month=latest_mon
-                                            ,day='28')),'month')-days(1)
+    cur_end_dt<-eom(latest_mon,cur_yr)
     
     cur_agg<-indata[ (RMSOccurrenceDate>=glue('{cur_yr}-01-01')
-                               &RMSOccurrenceDate<=cur_end_dt)
+                               &RMSOccurrenceDate<=as.Date(cur_end_dt))
                               ,.(OffenseCount=sum(OffenseCount))
                               ,by=group_dims]
     
@@ -55,7 +62,7 @@ NIBRS_YTD<- function( indata
       scale_fill_manual(values=c('darkblue', 'darkgreen', 'darkred')))
 }
 
-#NIBRS_YTD()
+#NIBRS_YTD(crimes_filtered)
 
 #Prepare for comparison
 #setnames(bas_agg, "OffenseCount", glue("OffenseCount_bas"))

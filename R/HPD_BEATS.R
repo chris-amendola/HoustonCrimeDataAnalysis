@@ -4,17 +4,11 @@ pri_yr='2022'
 cur_yr='2023'
 latest_mon='06'
 
-base_end_dt<-round_date(as.Date(ISOdate( year=bas_yr
-                                         ,month=latest_mon
-                                         ,day='28')),'month')-days(1)
+base_end_dt<-eom(latest_mon,bas_yr)
 
-pri_end_dt<-round_date(as.Date(ISOdate( year=pri_yr
-                                        ,month=latest_mon
-                                        ,day='28')),'month')-days(1)
+pri_end_dt<-eom(latest_mon,pri_yr)
 
-cur_end_dt<-round_date(as.Date(ISOdate( year=cur_yr
-                                        ,month=latest_mon
-                                        ,day='28')),'month')-days(1)
+cur_end_dt<-eom(latest_mon,cur_yr)
 
 incidents_ytd<-multi_year[ (NIBRSDescription %chin% violent_crimes),]%>%
               .[( RMSOccurrenceDate>=glue('{bas_yr}-01-01')
@@ -35,6 +29,9 @@ comp_ytds<-dcast( incidents_ytd_agg
 #Differnces
 comp_ytds$diff_prior<-comp_ytds$'2023'-comp_ytds$'2022'
 comp_ytds$diff_base<-comp_ytds$'2023'-comp_ytds$'2019'
+##Handle Nulls
+comp_ytds[is.na(diff_prior),diff_prior:=0]
+comp_ytds[is.na(diff_base),diff_base:=0]
 
 #POPUP
 comp_ytds$popup<-paste("<b>HPD Beat: </b>", comp_ytds$Beat, "<br>", 
@@ -45,10 +42,10 @@ comp_ytds$popup<-paste("<b>HPD Beat: </b>", comp_ytds$Beat, "<br>",
                        "<br>", "<b>Offense Count 2023: </b>", comp_ytds$'2023')
 
 #Merge GeoJson to DataTable
-final<-geo_join( beats
-                ,comp_ytds
-                ,"Beats"
-                ,"Beat")
+##This filters to mappable beats from data.
+beats_tab<-setDT(beats)
+final<-comp_ytds[beats_tab,on=.(Beat=Beats)]
+final<- sf::st_as_sf(final)
 
 #Get Bounds for custom bins
 min_bin<-min(comp_ytds$diff_prior,na.rm=TRUE)
@@ -76,7 +73,7 @@ leaflet() %>%
   addLayersControl(
     baseGroups = c("OSM (default)","World StreetMap", "World Imagery"),
     options = layersControlOptions(collapsed = FALSE))%>%
-  addPolygons(data = final , 
+  addPolygons(data = final, 
               fillColor = ~pal(final$diff_prior), 
               fillOpacity = 0.7, 
               weight = 1.0, 

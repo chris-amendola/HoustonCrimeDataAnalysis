@@ -16,3 +16,10 @@ for (icrime in violent_crimes) {
   print(NIBRS_YTD(indata=crimes_filtered,icrime))
 }
 
+#Current Month Location Plots
+
+#YTD Districts
+##Slope Plot
+#YTD Beats
+##Over all net calculations
+##Chloropleth
