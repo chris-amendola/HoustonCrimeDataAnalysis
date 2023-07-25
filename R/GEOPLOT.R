@@ -2,9 +2,6 @@ loc_plot<-function( curr_month
                    ,sup_dir=''
                    ,geo_data=districts){}
 
-
-sf_use_s2(FALSE)
-
 data_pre<-multi_year[  (NIBRSDescription %chin% violent_crimes)
                       &(RMSOccurrenceDate>='2023-06-01')
                      ,]%>%
