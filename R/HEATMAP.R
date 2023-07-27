@@ -47,7 +47,7 @@ nibrs_heat<-function(data=data,rad=15){
                #,intensity=~OffenseCount
                ,blur=10
                ,minOpacity=0.05
-               ,max=0.9
+               ,max=0.5
                ,radius=rad
                ,cellSize=5)%>%
     addPolygons( data=districts
@@ -57,3 +57,4 @@ nibrs_heat<-function(data=data,rad=15){
                  ,weight=2) 
 }
 nibrs_heat(datax,rad=7)
+nibrs_heat(datax,rad=10)
