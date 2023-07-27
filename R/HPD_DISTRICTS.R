@@ -43,29 +43,35 @@ comp_ytds$diff_base<-comp_ytds$'2023'-comp_ytds$'2019'
 
 comp_ytds<-comp_ytds[!is.na(DISTRICT)]
 
+#Join Diff by District
+plot_data<-incidents_ytd_agg[comp_ytds,on='DISTRICT']
+plot_data$leg_label<-paste(plot_data$DISTRICT,':',plot_data$diff_prior)
+
 ##PLOT!!!
-ggplot( data=incidents_ytd_agg
+ggplot( data=plot_data
        ,aes( x=year
             ,y=OffenseCount
-            ,group=DISTRICT)) +
-  geom_line( aes( color=DISTRICT 
-                 ,alpha=1)
+            ,group=leg_label)) +
+  geom_line( aes( color=leg_label 
+                 #,alpha=1
+                 )
             ,line_width=2) +
-  geom_point( aes( color=DISTRICT
-                  ,alpha=1)
+  geom_point( aes( color=leg_label
+                  #,alpha=1
+                  )
              ,size=4) +
-  geom_text_repel( data=incidents_ytd_agg[year=='2022'] 
-            ,aes(label=paste0(OffenseCount))  
-            ,hjust=1.35 
-            ,fontface="bold" 
-            ,size = 4) +
-  geom_text_repel( data=incidents_ytd_agg[year=='2023'] 
-            ,aes(label=paste0(DISTRICT," - ",OffenseCount)) 
+  #geom_text_repel( data=plot_data[year=='2022']
+  #          ,aes(label=leg_label)  
+  #          ,hjust=1.35 
+  #          ,fontface="bold" 
+  #          ,size = 4) +
+  geom_text_repel( data=plot_data[year=='2023'] 
+            ,aes(label=leg_label) 
             ,hjust=-.35 
             ,fontface="bold" 
             ,size = 4) +
   # move the x axis labels up top
-  scale_x_discrete(position="top") +
+  scale_x_discrete(position="top",expand = c(.01, .01)) +
   theme_bw() +
   # Format tweaks
   # Remove the legend
@@ -73,20 +79,20 @@ ggplot( data=incidents_ytd_agg
   # Remove the panel border
   theme(panel.border=element_blank()) +
   # Remove just about everything from the y axis
-  theme(axis.title.y=element_blank()) +
-  theme(axis.text.y=element_blank()) +
-  theme(panel.grid.major.y=element_blank()) +
-  theme(panel.grid.minor.y=element_blank()) +
+  #theme(axis.title.y=element_blank()) +
+  #theme(axis.text.y=element_blank()) +
+  #theme(panel.grid.major.y=element_blank()) +
+  #theme(panel.grid.minor.y=element_blank()) +
   # Remove a few things from the x axis and increase font size
   theme(axis.title.x=element_blank()) +
-  theme(panel.grid.major.x=element_blank()) +
-  theme(axis.text.x.top=element_text(size=12)) +
+  #theme(panel.grid.major.x=element_blank()) +
+  #theme(axis.text.x.top=element_text(size=12)) +
   # Remove x & y tick marks
-  theme(axis.ticks=element_blank()) +
+  #theme(axis.ticks=element_blank()) +
   # Format title & subtitle
   theme(plot.title=element_text(size=14, face = "bold", hjust = 0.5)) +
   theme(plot.subtitle=element_text(hjust = 0.5)) +
-  #  Labelling as desired
+  #  Labeling as desired
   labs(
     title = "Title",
     subtitle = "SUB",
