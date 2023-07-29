@@ -39,9 +39,8 @@ centers%>%leaflet()%>%
   addProviderTiles(provider = "Esri.WorldStreetMap",group = "World StreetMap") %>%
   addProviderTiles(provider = "Esri.WorldImagery",group = "World Imagery") %>%
   # addProviderTiles(provider = "NASAGIBS.ViirsEarthAtNight2012",group = "Nighttime Imagery") %>%
-  addCircleMarkers( lng = ~MapLongitude
+  addCircleMarkers( lng = ~MapLongitude 
                     ,lat = ~MapLatitude
-                    ,clusterOptions=markerClusterOptions()
                     ,label=~`model.unit.classif`
                     ) %>%
   addLayersControl(

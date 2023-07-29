@@ -9,6 +9,12 @@ library("leaflet")
 library('sf')
 library('dplyr')
 
+setwd('C:/Users/chris/Documents/GitHub/HoustonCrimeDataAnalysis/R')
+
+source('NIBRS_Trendx.R')
+source('YTD_NIBRS.R')
+source('GEOPLOT.R')
+
 sf_use_s2(FALSE)
 eom<-function( month
                ,year
@@ -95,6 +101,8 @@ multi_year<-rbind(baseline,year1,year2,year3,year4)%>%
 
 multi_year$year<-year(multi_year$RMSOccurrenceDate)
 multi_year$Overall<-'OverAll'
+
+all_desc<-multi_year%>%group_by(NIBRSDescription)%>%summarize(Freq=sum(OffenseCount))
 
 setDT(multi_year)
 

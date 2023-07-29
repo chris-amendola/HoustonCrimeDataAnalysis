@@ -7,11 +7,13 @@ eom<-function( month
                               ,day=base_day)),'month')-days(1))
 }
 
-m='06'
-y='2019'
-t<-eom(m,y)
-eom(m,y)
-eom('06','2019')
+test_eom<-function(){
+  m='06'
+  y='2019'
+  t<-eom(m,y)
+  eom(m,y)
+  eom('06','2019')
+}
 
 NIBRS_YTD<- function( indata
                      ,title1='title1'  

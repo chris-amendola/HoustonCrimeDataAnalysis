@@ -1,3 +1,4 @@
+setwd('C:/Users/chris/Documents/Houston_Crime_Data_Analysis/July2023')
 
 bas_yr='2019'
 pri_yr='2022'
@@ -45,6 +46,8 @@ comp_ytds$popup<-paste("<b>HPD Beat: </b>", comp_ytds$Beat, "<br>",
 ##This filters to mappable beats from data.
 beats_tab<-setDT(beats)
 final<-comp_ytds[beats_tab,on=.(Beat=Beats)]
+final[c(`2023`)][is.na(final[c(`2023`)])]<-0
+final$crime_density<-final$`2023`/final$Area_sq_mi
 final<- sf::st_as_sf(final)
 
 #Get Bounds for custom bins
@@ -59,13 +62,14 @@ c_bins=c( min_bin
          ,(max_bin%/%3)*2
          ,max_bin)
 
-# Creating a color palette, with custom bins, based on differnce from prior year
+# Creating a color palette, with custom bins, based on difference from prior year
 pal <- colorBin( "RdYlBu"
-                ,domain=final$OffenseCount
+                ,domain=final$diff_prior
                 ,c_bins
-                ,pretty = FALSE)
+                ,pretty = FALSE
+                ,reverse=TRUE)
 
-leaflet() %>%
+change<-leaflet() %>%
   addTiles()%>%
   addTiles(group = "OSM (default)") %>%
   addProviderTiles(provider = "Esri.WorldStreetMap",group = "World StreetMap") %>%
@@ -84,3 +88,37 @@ leaflet() %>%
             position = "bottomright", 
             title = "YTD Changes in Violent Crime Counts")
 
+saveWidget( change
+            ,selfcontained=TRUE  
+            ,file=glue('Violent_Change_{imonth}.html')
+            ,title=glue('Violent_Change_{imonth}'))
+
+## DENSITY
+pal <- colorQuantile( palette="RdYlBu"
+                    ,domain=final$crime_density
+                    ,n=10
+                    ,reverse=TRUE)
+
+dense<-leaflet() %>%
+  addTiles()%>%
+  addTiles(group = "OSM (default)") %>%
+  addProviderTiles(provider = "Esri.WorldStreetMap",group = "World StreetMap") %>%
+  addProviderTiles(provider = "Esri.WorldImagery",group = "World Imagery") %>%
+  addLayersControl(
+    baseGroups = c("OSM (default)","World StreetMap", "World Imagery"),
+    options = layersControlOptions(collapsed = FALSE))%>%
+  addPolygons(data = final, 
+              fillColor = ~pal(final$crime_density), 
+              fillOpacity = 0.7, 
+              weight = 1.0, 
+              smoothFactor = 0.2, 
+              popup = ~popup) %>%
+  addLegend(pal = pal, 
+            values = final$crime_density, 
+            position = "bottomright", 
+            title = "Violent Crime Density(#/Square Mile)")
+
+saveWidget( dense
+            ,selfcontained=TRUE  
+            ,file=glue('Violent_Density_{imonth}.html')
+            ,title=glue('Violent_Density_{imonth}'))
