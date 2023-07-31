@@ -3,6 +3,7 @@
 
 # load the kohonen package
 library("kohonen")
+library('RColorBrewer')
 
 crimes_filtered<-multi_year[NIBRSDescription %chin% violent_crimes]%>%
                 .[ (RMSOccurrenceDate>='2023-06-01')
@@ -12,8 +13,8 @@ crimes_filtered<-multi_year[NIBRSDescription %chin% violent_crimes]%>%
 
 coords<-scale(crimes_filtered[,.(MapLongitude,MapLatitude)])
 
-grid<-somgrid( xdim=5
-              ,ydim=5
+grid<-somgrid( xdim=4
+              ,ydim=4
               ,topo="hexagonal")
 
 model<-som( coords
@@ -26,31 +27,52 @@ testa<-as.data.frame(model$codes)
 
 clus_coords<-cbind(as.data.frame(model$unit.classif),coords)
 combined<-cbind(crimes_filtered,clus_coords)
+# make palette
+colorcount=25
+getPalette=colorRampPalette(brewer.pal(9,'Set1'))
+circ_pal<-colorFactor( palette=getPalette(16)
+                       ,domain=combined$model.unit.classif)
 
 names(combined)<-make.names( names(combined)
                             ,unique=TRUE)
 
-centers<-combined%>%group_by(`model.unit.classif`)%>%summarize( MapLongitude=mean(MapLongitude)
-                                                               ,MapLatitude=mean(MapLatitude))
+centers<-combined%>%
+         group_by(`model.unit.classif`)%>%
+         summarize( MapLongitude=mean(MapLongitude)
+                   ,MapLatitude=mean(MapLatitude)
+                   ,N=sum(OffenseCount))
+
+centers$label<-paste("<b>Cluster #: </b>", centers$model.unit.classif, "<br>", 
+                     "<br>", "<b>N: </b>", centers$N,
+                     "<br>", "<b>Longitude: </b>", centers$MapLongitude,
+                     "<br>", "<b>Latitude: </b>", centers$MapLatitude)
 
 centers%>%leaflet()%>% 
   addTiles()%>%
-  addTiles(group = "OSM (default)") %>%
-  addProviderTiles(provider = "Esri.WorldStreetMap",group = "World StreetMap") %>%
-  addProviderTiles(provider = "Esri.WorldImagery",group = "World Imagery") %>%
-  # addProviderTiles(provider = "NASAGIBS.ViirsEarthAtNight2012",group = "Nighttime Imagery") %>%
-  addCircleMarkers( lng = ~MapLongitude 
-                    ,lat = ~MapLatitude
-                    ,label=~`model.unit.classif`
-                    ) %>%
-  addLayersControl(
-    baseGroups = c("OSM (default)","World StreetMap", "World Imagery"),
-    options = layersControlOptions(collapsed = FALSE))%>%
+  addTiles(group="OSM (default)") %>%
+  addProviderTiles( provider="Esri.WorldStreetMap"
+                   ,group = "World StreetMap") %>%
+  addProviderTiles( provider="Esri.WorldImagery"
+                   ,group="World Imagery") %>%
   addPolygons( data=districts
                ,fill=T
                ,color="grey"
                ,opacity=1
-               ,weight=2) 
-
+               ,weight=2)%>% 
+  addMarkers( lng = ~MapLongitude 
+                    ,lat=~MapLatitude
+                    ,popup=~label
+                    ) %>%
+  addCircleMarkers( data=combined
+                   ,lng = ~MapLongitude 
+                   ,lat=~MapLatitude
+                   ,color=~circ_pal(model.unit.classif)
+                   ,radius=5
+                   ,)%>%
+  addLayersControl(
+    baseGroups = c( "OSM (default)"
+                  ,"World StreetMap"
+                  ,"World Imagery"),
+    options = layersControlOptions(collapsed = FALSE))
 #geo_plot(data=centers)
 
