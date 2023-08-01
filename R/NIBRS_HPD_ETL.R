@@ -8,6 +8,7 @@ library("ggthemes")
 library("leaflet")
 library('sf')
 library('dplyr')
+library('htmlwidgets')
 
 setwd('C:/Users/chris/Documents/GitHub/HoustonCrimeDataAnalysis/R')
 
@@ -16,30 +17,12 @@ source('YTD_NIBRS.R')
 source('GEOPLOT.R')
 
 sf_use_s2(FALSE)
-eom<-function( month
-               ,year
-               ,base_day='28'){
-  
-  return(round_date(as.Date(ISOdate( year=year
-                                     ,month=month
-                                     ,day=base_day)),'month')-days(1))
-}
-
-#m='06'
-#y='2019'
-#t<-eom(m,y)
-#eom(m,y)
-#eom('06','2019')
-
-#theme_update(plot.title = element_text(hjust = 0.5))
 
 where_the_data_is<-'C:/Users/chris/Documents/Random_Nextdoor/My_Crime_Analysis - 05.04.23/Group/Data/HPD_NIBRS/'
 support_dir<-'C:/Users/chris/Documents/GitHub/HoustonCrimeDataAnalysis/DATA/Support/'
 
 districts<-st_read(glue("{support_dir}COH_ADMINISTRATIVE_BOUNDARY_-_MIL.geojson"))%>%
   filter(!is.na(DISTRICT) )
-
-
 
 beats<-st_read(glue("{support_dir}COH_POLICE_BEATS.geojson"))
 

@@ -90,8 +90,8 @@ change<-leaflet() %>%
 
 saveWidget( change
             ,selfcontained=TRUE  
-            ,file=glue('Violent_Change_{imonth}.html')
-            ,title=glue('Violent_Change_{imonth}'))
+            ,file=glue('Violent_Change_{latest_mon}.html')
+            ,title=glue('Violent_Change_{latest_mon}'))
 
 ## DENSITY
 pal <- colorQuantile( palette="RdYlBu"
@@ -120,5 +120,5 @@ dense<-leaflet() %>%
 
 saveWidget( dense
             ,selfcontained=TRUE  
-            ,file=glue('Violent_Density_{imonth}.html')
-            ,title=glue('Violent_Density_{imonth}'))
+            ,file=glue('Violent_Density_{latest_mon}.html')
+            ,title=glue('Violent_Density_{latest_mon}'))

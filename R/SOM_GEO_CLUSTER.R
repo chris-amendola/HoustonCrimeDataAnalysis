@@ -4,6 +4,8 @@
 # load the kohonen package
 library("kohonen")
 library('RColorBrewer')
+set.seed(3141) 
+
 
 crimes_filtered<-multi_year[NIBRSDescription %chin% violent_crimes]%>%
                 .[ (RMSOccurrenceDate>='2023-06-01')
@@ -74,5 +76,4 @@ centers%>%leaflet()%>%
                   ,"World StreetMap"
                   ,"World Imagery"),
     options = layersControlOptions(collapsed = FALSE))
-#geo_plot(data=centers)
 
