@@ -104,7 +104,7 @@ y2023<-crime_YTD[ (year=='2023')&(Beat=='18F30')
 y2023$prop<-y2023$FREQ/sum(y2023$FREQ)
 y2023$year<-'2023'
 
-data_concat <- rbindlist(list(y2019,y2022,y2023))
+data_concat<-rbindlist(list(y2019,y2022,y2023))
 
 ggplot( data=data_concat
         ,aes( y=FREQ
@@ -116,3 +116,38 @@ ggplot( data=data_concat
   ggtitle(glue("Beat 18F30\n Jan-Jun Violent Crime Incidents"))+
   theme_economist()+
   scale_fill_manual(values=c('darkblue', 'darkgreen', 'darkred'))
+
+#Data Wide
+data_wide<-dcast( data_concat
+                  ,Premise~year
+                  ,value.var=c( 'FREQ'
+                                ,"prop"))
+cols = c('FREQ_2019','FREQ_2022','FREQ_2023')
+data_wide[,(cols):=lapply(.SD, nafill,fill=0)
+          ,.SDcols = cols]
+ 
+data_wide$diff_22<-data_wide$FREQ_2023-data_wide$FREQ_2022
+
+ggplot( data=data_wide
+        ,aes( y=diff_22
+              ,x=Premise
+              ))+
+  geom_bar( position="dodge"
+            ,stat="identity")+
+  coord_flip()+
+  ggtitle(glue("Beat 18F30\n Changes 2022-2023\n Violent Crime Incidents"))+
+  theme_economist()+
+  scale_fill_manual(values=c('darkblue', 'darkgreen', 'darkred'))
+
+## 18F30 Drill Down Premises
+drill_down<-multi_year[ (NIBRSDescription %chin% violent_crimes)
+                            &(Beat=='18F30')
+                            &(Premise=='Bar, Nightclub')
+                            &(year=='2023')]
+
+dd_agg<-drill_down[,.(FREQ=sum(OffenseCount))
+                     ,by=c( 'StreetNo'
+                           ,'StreetName'
+                           ,'StreetType')]
+
+  
