@@ -13,4 +13,4 @@ for (icrime in auto_crimes) {
   print(NIBRS_YTD(indata=crimes_filtered,icrime))
 }
 
-
+## Did they CC ring get busted in Aug 2022?
