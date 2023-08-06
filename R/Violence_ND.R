@@ -78,3 +78,20 @@ for (imonth in ytd_months) {
             ,file=glue('Violent_Map_{imonth}.html')
             ,title=glue('Violent_Map_{imonth}'))
 }
+
+block<-function(){
+for (ibeat in beats$Beats){
+  beat_data<-crimes_filtered[Beat==ibeat]
+  if (nrow(beat_data)>0){
+    print(ibeat)
+    print(nrow(beat_data))
+    print(NIBRS_YTD( indata=beat_data
+                ,glue('Violent Incidents\nBeat: {ibeat}')))
+  } else{
+    print('NO ROWS!')
+    print(ibeat)
+  }
+}}
+         
+
+ 

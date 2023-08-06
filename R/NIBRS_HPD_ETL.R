@@ -90,6 +90,7 @@ multi_year$Overall<-'OverAll'
 
 all_desc<-multi_year%>%group_by(NIBRSDescription)%>%summarize(Freq=sum(OffenseCount))
 all_prem<-multi_year%>%group_by(Premise)%>%summarize(Freq=sum(OffenseCount))
+all_beat<-multi_year%>%group_by(Beat)%>%summarize(Freq=sum(OffenseCount))
 
 setDT(multi_year)
 
