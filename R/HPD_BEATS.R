@@ -93,6 +93,48 @@ saveWidget( change
             ,file=glue('Violent_Change_{latest_mon}.html')
             ,title=glue('Violent_Change_{latest_mon}'))
 
+## BASE
+min_bin<-min(comp_ytds$diff_base,na.rm=TRUE)
+max_bin<-max(comp_ytds$diff_base,na.rm=TRUE)
+
+c_bins=c( min_bin
+          ,(min_bin%/%3)*2
+          ,min_bin%/%3
+          ,0
+          ,max_bin%/%3
+          ,(max_bin%/%3)*2
+          ,max_bin)
+
+pal <- colorBin( "RdYlBu"
+                 ,domain=final$diff_base
+                 ,c_bins
+                 ,pretty = FALSE
+                 ,reverse=TRUE)
+
+change_base<-leaflet() %>%
+  addTiles()%>%
+  addTiles(group = "OSM (default)") %>%
+  addProviderTiles(provider = "Esri.WorldStreetMap",group = "World StreetMap") %>%
+  addProviderTiles(provider = "Esri.WorldImagery",group = "World Imagery") %>%
+  addLayersControl(
+    baseGroups = c("OSM (default)","World StreetMap", "World Imagery"),
+    options = layersControlOptions(collapsed = FALSE))%>%
+  addPolygons(data = final, 
+              fillColor = ~pal(final$diff_base), 
+              fillOpacity = 0.7, 
+              weight = 1.0, 
+              smoothFactor = 0.2, 
+              popup = ~popup) %>%
+  addLegend(pal = pal, 
+            values = final$diff_base, 
+            position = "bottomright", 
+            title = "YTD Changes in Violent Crime Counts 2019")
+
+saveWidget( change_base
+            ,selfcontained=TRUE  
+            ,file=glue('Violent_Change_Base_{latest_mon}.html')
+            ,title=glue('Violent_Change_Base_{latest_mon}'))
+
 ## DENSITY
 pal <- colorQuantile( palette="RdYlBu"
                     ,domain=final$crime_density

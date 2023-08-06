@@ -21,6 +21,9 @@ sf_use_s2(FALSE)
 where_the_data_is<-'C:/Users/chris/Documents/Random_Nextdoor/My_Crime_Analysis - 05.04.23/Group/Data/HPD_NIBRS/'
 support_dir<-'C:/Users/chris/Documents/GitHub/HoustonCrimeDataAnalysis/DATA/Support/'
 
+label_year<-'2023'
+label_month<-'06'
+
 districts<-st_read(glue("{support_dir}COH_ADMINISTRATIVE_BOUNDARY_-_MIL.geojson"))%>%
   filter(!is.na(DISTRICT) )
 

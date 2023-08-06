@@ -21,7 +21,7 @@ NIBRS_Trend<- function( indata
         geom_hline(yintercept=max_value, linetype="dashed", color = "blue")+
         theme_economist()+
         theme(legend.key = element_rect(fill = "grey", colour = "black"))+
-        theme(plot.title = element_text(hjust = 0.5))+
+        theme(plot.title = element_text(hjust = 0.0))+
         ylab("Rolling 12 Month Average"))
 }
 

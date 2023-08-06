@@ -5,8 +5,19 @@ setwd('C:/Users/chris/Documents/Houston_Crime_Data_Analysis/July2023')
 crimes_filtered<-multi_year[NIBRSDescription %chin% violent_crimes]%>%
   .[,NIBRSDescription:='Violent']
 
-NIBRS_Trend(indata=crimes_filtered,'Violent')
-NIBRS_YTD(indata=crimes_filtered,'Violent')
+NIBRS_Trend( indata=crimes_filtered
+            ,'Violent Incidents')
+
+ggsave( glue('Violent_Trend_{label_month}{label_year}.png')
+       ,height=4
+       ,width=8)
+
+NIBRS_YTD( indata= crimes_filtered
+           ,'Violent Incidents')
+
+ggsave( glue('Violent_YTD_{label_month}{label_year}.png')
+        ,height=4
+        ,width=8)
 
 crimes_filtered<-multi_year[NIBRSDescription %chin% violent_crimes]
 
@@ -16,8 +27,17 @@ for (icrime in violent_crimes) {
   crimes_filtered<-multi_year[NIBRSDescription==icrime]
   print(nrow(crimes_filtered) )
   
-  print(NIBRS_Trend(indata=crimes_filtered,icrime))
-  print(NIBRS_YTD(indata=crimes_filtered,icrime))
+  print( NIBRS_Trend(indata=crimes_filtered
+        ,icrime))
+  ggsave( glue('{icrime}_Trend_{label_month}{label_year}.png')
+          ,height=4
+          ,width=8)
+  
+  print( NIBRS_YTD(indata=crimes_filtered
+        ,icrime))
+  ggsave( glue('{icrime}_YTD_{label_month}{label_year}.png')
+          ,height=4
+          ,width=8)
   
   #Premise Eval Latest Year
   prem<-crimes_filtered[year=='2023',.(Freq=sum(OffenseCount)),by=Premise]
@@ -30,6 +50,9 @@ for (icrime in violent_crimes) {
     scale_x_discrete(guide = guide_axis(angle=90))+
     ggtitle(glue("{icrime}: Premise Distribution"))
   print(prem_plot)
+  ggsave( glue('{icrime}_Premise_{label_month}{label_year}.png')
+          ,height=4
+          ,width=8)
 }
  
 ## Mapping by Month

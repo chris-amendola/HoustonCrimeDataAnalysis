@@ -19,7 +19,8 @@ pre<-setDT(crimes_filtered)
 # Recode Premise
 pre[,prem_oth:=ifelse( Premise %in% c( 'Residence, Home (Includes Apartment)'
                                       ,'Parking Lot, Garage'
-                                      ,'Highway, Road, Street, Alley')
+                                      ,'Highway, Road, Street, Alley'
+                                      ,'Bar, Nightclub')
                       ,Premise
                       ,'Other')]
 
@@ -142,7 +143,7 @@ ggplot( data=data_wide
 ## 18F30 Drill Down Premises
 drill_down<-multi_year[ (NIBRSDescription %chin% violent_crimes)
                             &(Beat=='18F30')
-                            &(Premise=='Bar, Nightclub')
+                            &(Premise=='Parking Lot, Garage')#&(Premise=='Bar, Nightclub')
                             &(year=='2023')]
 
 dd_agg<-drill_down[,.(FREQ=sum(OffenseCount))
