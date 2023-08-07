@@ -1,3 +1,5 @@
+library(gt)
+
 setwd('C:/Users/chris/Documents/Houston_Crime_Data_Analysis/July2023')
 
 bas_yr='2019'
@@ -27,32 +29,77 @@ comp_ytds<-dcast( incidents_ytd_agg
                  ,Beat~year
                  ,value.var = c("OffenseCount"))
 
-#Differnces
-comp_ytds$diff_prior<-comp_ytds$'2023'-comp_ytds$'2022'
-comp_ytds$diff_base<-comp_ytds$'2023'-comp_ytds$'2019'
-##Handle Nulls
-comp_ytds[is.na(diff_prior),diff_prior:=0]
-comp_ytds[is.na(diff_base),diff_base:=0]
-
-#POPUP
-comp_ytds$popup<-paste("<b>HPD Beat: </b>", comp_ytds$Beat, "<br>", 
-                       "<br>", "<b>Change from Last Year: </b>", comp_ytds$diff_prior,
-                       "<br>", "<b>Change from 2019: </b>", comp_ytds$diff_base,
-                       "<br>", "<b>Offense Count 2019: </b>", comp_ytds$'2019',
-                       "<br>", "<b>Offense Count 2022: </b>", comp_ytds$'2022',
-                       "<br>", "<b>Offense Count 2023: </b>", comp_ytds$'2023')
-
 #Merge GeoJson to DataTable
 ##This filters to mappable beats from data.
 beats_tab<-setDT(beats)
 final<-comp_ytds[beats_tab,on=.(Beat=Beats)]
-final[c(`2023`)][is.na(final[c(`2023`)])]<-0
-final$crime_density<-final$`2023`/final$Area_sq_mi
-final<- sf::st_as_sf(final)
 
+#Handle Numeric NAs
+final[is.na(`2019`), `2019`:= 0]
+final[is.na(`2022`), `2022`:= 0]
+final[is.na(`2023`), `2023`:= 0]
+#Differnces
+final$diff_prior<-final$'2023'-final$'2022'
+final$diff_base<-final$'2023'-final$'2019'
+final$crime_density<-final$`2023`/final$Area_sq_mi
+
+#POPUP
+final$popup<-paste("<b>HPD Beat: </b>", final$Beat, "<br>", 
+                       "<br>", "<b>Change from Last Year: </b>", final$diff_prior,
+                       "<br>", "<b>Change from 2019: </b>", final$diff_base,
+                       "<br>", "<b>Offense Count 2019: </b>", final$'2019',
+                       "<br>", "<b>Offense Count 2022: </b>", final$'2022',
+                       "<br>", "<b>Offense Count 2023: </b>", final$'2023')
+
+#SIMPLE REPORT
+rep_data<-final[,c('Beat','diff_base','diff_prior')]
+rep_data[diff_base==0,base_chg:='Zero']
+rep_data[diff_base>0,base_chg:='Up']
+rep_data[diff_base<0,base_chg:='Down']
+
+rep_data[diff_prior==0,prior_chg:='Zero']
+rep_data[diff_prior>0,prior_chg:='Up']
+rep_data[diff_prior<0,prior_chg:='Down']
+
+rep_data_base_agg<-rep_data[,.(Freq=.N,Count=sum(diff_base)),by='base_chg' ]
+rep_data_prior_agg<-rep_data[,.(Freq=.N,Count=sum(diff_prior)),by='prior_chg' ]
+
+rep_data_prior_agg%>%gt()%>%tab_header(
+  title='Beat Changes from Prior Year',
+  subtitle='2022')%>%
+  cols_label( prior_chg = md("**Change Direction**")
+             ,Freq=md("**Count**")
+             ,Count=md("**Offense Count**")) 
+
+ggplot( data=rep_data_prior_agg
+        ,aes( y=Freq
+              ,x=prior_chg))+
+  geom_bar( position="dodge"
+            ,stat="identity")+
+  ggtitle(glue("Beat Changes from Prior Year(2022)"))+
+  theme_economist()
+
+rep_data_base_agg%>%gt()%>%tab_header(
+  title='Beat Changes from Base Year',
+  subtitle='2019')%>%
+  cols_label( base_chg=md("**ChangeDirection**")
+             ,Freq=md("**Count**")
+             ,Count=md("**Offense Count**")) 
+
+ggplot( data=rep_data_base_agg
+        ,aes( y=Freq
+              ,x=base_chg))+
+  geom_bar( position="dodge"
+            ,stat="identity")+
+  ggtitle(glue("Beat Changes from Base Year(2019)"))+
+  theme_economist()
+
+# MAPPING
+#Prep Final
+final<- sf::st_as_sf(final)
 #Get Bounds for custom bins
-min_bin<-min(comp_ytds$diff_prior,na.rm=TRUE)
-max_bin<-max(comp_ytds$diff_prior,na.rm=TRUE)
+min_bin<-min(final$diff_prior,na.rm=TRUE)
+max_bin<-max(final$diff_prior,na.rm=TRUE)
 
 c_bins=c( min_bin
          ,(min_bin%/%3)*2
@@ -94,8 +141,8 @@ saveWidget( change
             ,title=glue('Violent_Change_{latest_mon}'))
 
 ## BASE
-min_bin<-min(comp_ytds$diff_base,na.rm=TRUE)
-max_bin<-max(comp_ytds$diff_base,na.rm=TRUE)
+min_bin<-min(final$diff_base,na.rm=TRUE)
+max_bin<-max(final$diff_base,na.rm=TRUE)
 
 c_bins=c( min_bin
           ,(min_bin%/%3)*2
