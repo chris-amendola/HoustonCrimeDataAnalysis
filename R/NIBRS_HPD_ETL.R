@@ -82,6 +82,7 @@ year4<-read_excel(glue('{where_the_data_is}NIBRSPublicViewJun23.xlsx'))
 min(year4$RMSOccurrenceDate)
 max(year4$RMSOccurrenceDate)
 
+## MULTI YEAR
 multi_year<-rbind(baseline,year1,year2,year3,year4)%>%
             mutate(year_mon=floor_date(RMSOccurrenceDate,'month'))
 
