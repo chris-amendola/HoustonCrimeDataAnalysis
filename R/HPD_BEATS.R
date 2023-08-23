@@ -5,7 +5,7 @@ setwd('C:/Users/chris/Documents/Houston_Crime_Data_Analysis/July2023')
 bas_yr='2019'
 pri_yr='2022'
 cur_yr='2023'
-latest_mon='06'
+latest_mon='07'
 
 base_end_dt<-eom(latest_mon,bas_yr)
 

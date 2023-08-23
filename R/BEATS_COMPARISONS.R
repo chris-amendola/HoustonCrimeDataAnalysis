@@ -1,7 +1,7 @@
 bas_yr='2019'
 pri_yr='2022'
 cur_yr='2023'
-latest_mon='06'
+latest_mon='07'
 
 base_end_dt<-eom(latest_mon,bas_yr)
 pri_end_dt<-eom(latest_mon,pri_yr)
@@ -10,7 +10,7 @@ cur_end_dt<-eom(latest_mon,cur_yr)
 ## Overall Violent
 crimes_filtered<-multi_year[ (NIBRSDescription %chin% violent_crimes)
                             &(RMSOccurrenceDate>='2023-01-01')
-                            &(RMSOccurrenceDate<='2023-06-30')]
+                            &(RMSOccurrenceDate<='2023-07-30')]
 
 beats_agg<-crimes_filtered[,.(N=sum(OffenseCount)),by=c('Beat')]
 

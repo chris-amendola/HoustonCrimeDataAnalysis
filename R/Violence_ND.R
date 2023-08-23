@@ -13,7 +13,8 @@ ggsave( glue('Violent_Trend_{label_month}{label_year}.png')
        ,width=8)
 
 NIBRS_YTD( indata= crimes_filtered
-           ,'Violent Incidents')
+           ,'Violent Incidents'
+           ,latest_mon='07')
 
 ggsave( glue('Violent_YTD_{label_month}{label_year}.png')
         ,height=4
@@ -57,7 +58,7 @@ for (icrime in violent_crimes) {
  
 ## Mapping by Month
 cur_year<-'2023'
-ytd_months<-c('01','02','03','04','05','06')
+ytd_months<-c('01','02','03','04','05','06','07')
 
 for (imonth in ytd_months) {
   print(imonth)

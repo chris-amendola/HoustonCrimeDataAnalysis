@@ -52,6 +52,7 @@ NIBRS_YTD<- function( indata
     cur_agg[,'Year':=cur_yr]
     
     plot_prep<- rbindlist(list(bas_agg,pri_agg,cur_agg))  
+    print(plot_prep)
     
     return(ggplot( data=plot_prep
            ,aes( y=OffenseCount

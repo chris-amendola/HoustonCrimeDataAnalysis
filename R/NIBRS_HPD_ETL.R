@@ -22,7 +22,9 @@ where_the_data_is<-'C:/Users/chris/Documents/Random_Nextdoor/My_Crime_Analysis -
 support_dir<-'C:/Users/chris/Documents/GitHub/HoustonCrimeDataAnalysis/DATA/Support/'
 
 label_year<-'2023'
-label_month<-'06'
+label_month<-'07'
+to_dt_month<-'07'
+
 
 districts<-st_read(glue("{support_dir}COH_ADMINISTRATIVE_BOUNDARY_-_MIL.geojson"))%>%
   filter(!is.na(DISTRICT) )
@@ -77,7 +79,7 @@ year3<-read_excel(glue('{where_the_data_is}NIBRSPublicViewDec22.xlsx'))
 min(year3$RMSOccurrenceDate)
 max(year3$RMSOccurrenceDate)
 
-year4<-read_excel(glue('{where_the_data_is}NIBRSPublicViewJun23.xlsx'))
+year4<-read_excel(glue('{where_the_data_is}NIBRSPublicViewJul23.xlsx'))
 
 min(year4$RMSOccurrenceDate)
 max(year4$RMSOccurrenceDate)
@@ -94,8 +96,6 @@ all_prem<-multi_year%>%group_by(Premise)%>%summarize(Freq=sum(OffenseCount))
 all_beat<-multi_year%>%group_by(Beat)%>%summarize(Freq=sum(OffenseCount))
 
 setDT(multi_year)
-
-to_dt_month<-'06'
 
 YTD_VOLUMES<-multi_year[ (NIBRSDescription %chin% violent_crimes),]%>%
   .[ ( RMSOccurrenceDate>=glue('2019-01-01')
@@ -146,8 +146,6 @@ ETL_VALIDATE<-function(){
     geom_bar(stat="identity")
 
     qa_year_by_year_mon<-multi_year%>%group_by(year_mon,year)%>%summarize(freq=n())
-
-    to_dt_month<-'06'
     
     YTD_VOLUMES<-multi_year[ (NIBRSDescription %chin% violent_crimes),]%>%
       .[ ( RMSOccurrenceDate>=glue('2019-01-01')
