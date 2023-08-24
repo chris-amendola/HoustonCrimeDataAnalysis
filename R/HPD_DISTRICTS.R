@@ -1,5 +1,7 @@
 library('ggrepel')
 
+setwd('C:/Users/chris/Documents/Houston_Crime_Data_Analysis/July2023')
+
 bas_yr='2019'
 pri_yr='2022'
 cur_yr='2023'
@@ -98,3 +100,6 @@ ggplot( data=plot_data
     caption = ""
   )
 
+ggsave( glue('Districts_Violence_Slope_Plot.png')
+        ,height=8
+        ,width=5)
