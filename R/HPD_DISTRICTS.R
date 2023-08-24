@@ -46,46 +46,45 @@ comp_ytds<-comp_ytds[!is.na(DISTRICT)]
 #Join Diff by District
 plot_data<-incidents_ytd_agg[comp_ytds,on='DISTRICT']
 plot_data$leg_label<-paste(plot_data$DISTRICT,':',plot_data$diff_prior)
+plot_data$diff_lab<-paste('[',plot_data$diff_prior,']')
 
 ##PLOT!!!
 ggplot( data=plot_data
        ,aes( x=year
             ,y=OffenseCount
-            ,group=leg_label)) +
-  geom_line( aes( color=leg_label 
-                 #,alpha=1
-                 )
-            ,line_width=2) +
-  geom_point( aes( color=leg_label
-                  #,alpha=1
-                  )
+            ,group=DISTRICT)) +
+  geom_line( aes( color=DISTRICT)
+            ,size=1.5) +
+  geom_point( aes( color=DISTRICT)
              ,size=4) +
-  #geom_text_repel( data=plot_data[year=='2022']
-  #          ,aes(label=leg_label)  
-  #          ,hjust=1.35 
-  #          ,fontface="bold" 
-  #          ,size = 4) +
   geom_text_repel( data=plot_data[year=='2023'] 
-            ,aes(label=leg_label) 
-            ,hjust=-.35 
+            ,aes(label=diff_lab) 
+            ,hjust=-2.0
+            ,vjust=1.5
             ,fontface="bold" 
             ,size = 4) +
-  # move the x axis labels up top
-  scale_x_discrete(position="top",expand = c(.01, .01)) +
-  theme_bw() +
+  geom_text_repel( data=plot_data[year=='2022'] 
+                   ,aes(label=DISTRICT) 
+                   ,hjust=-1.5
+                   ,vjust=1.5
+                   ,fontface="bold" 
+                   ,size = 4) +
+  # move the x axis labels
+  scale_x_continuous(breaks=seq(2022,2023,by=1)) +
+  theme_economist() +
   # Format tweaks
   # Remove the legend
   theme(legend.position="none") +
   # Remove the panel border
   theme(panel.border=element_blank()) +
   # Remove just about everything from the y axis
-  #theme(axis.title.y=element_blank()) +
+  theme(axis.title.y=element_blank()) +
   #theme(axis.text.y=element_blank()) +
   #theme(panel.grid.major.y=element_blank()) +
   #theme(panel.grid.minor.y=element_blank()) +
   # Remove a few things from the x axis and increase font size
   theme(axis.title.x=element_blank()) +
-  #theme(panel.grid.major.x=element_blank()) +
+  #theme(panel.grid.minor.x=element_blank()) +
   #theme(axis.text.x.top=element_text(size=12)) +
   # Remove x & y tick marks
   #theme(axis.ticks=element_blank()) +
@@ -94,8 +93,8 @@ ggplot( data=plot_data
   theme(plot.subtitle=element_text(hjust = 0.5)) +
   #  Labeling as desired
   labs(
-    title = "Title",
-    subtitle = "SUB",
-    caption = "Caption"
+    title = "Houston Council Districts\nYTD 2022 to 2023",
+    subtitle = "Changes in Violent Crime Incidents",
+    caption = ""
   )
 
