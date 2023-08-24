@@ -9,16 +9,16 @@ NIBRS_Trend( indata=crimes_filtered
             ,'Violent Incidents')
 
 ggsave( glue('Violent_Trend_{label_month}{label_year}.png')
-       ,height=4
-       ,width=8)
+       ,height=3
+       ,width=6)
 
 NIBRS_YTD( indata= crimes_filtered
            ,'Violent Incidents'
            ,latest_mon='07')
 
 ggsave( glue('Violent_YTD_{label_month}{label_year}.png')
-        ,height=4
-        ,width=8)
+        ,height=3
+        ,width=6)
 
 crimes_filtered<-multi_year[NIBRSDescription %chin% violent_crimes]
 

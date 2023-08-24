@@ -8,10 +8,11 @@ NIBRS_Trend<- function( indata
         .[order(year_mon)]%>%
         .[year_mon>'2019-12-01']
   
-  start_val<-data[year_mon==min(year_mon)][[1,3]]
-  max_value<-data[Rolling_12_Month==max(Rolling_12_Month)][[1,3]]
-  min_value<-data[Rolling_12_Month==min(Rolling_12_Month)][[1,3]]
-  end_value<-data[year_mon==max(year_mon)][[1,3]]
+  start_val<-round(data[year_mon==min(year_mon)][[1,3]],2)
+  max_value<-round(data[Rolling_12_Month==max(Rolling_12_Month)][[1,3]],2)
+  max_mon<-data[Rolling_12_Month==max(Rolling_12_Month)][[1,1]]
+  min_value<-round(data[Rolling_12_Month==min(Rolling_12_Month)][[1,3]],2)
+  end_value<-round(data[year_mon==max(year_mon)][[1,3]],2)
   
   return(ggplot(data=data, aes(x=year_mon, y=Rolling_12_Month, group=1))+
         ggtitle(glue('{title1}\n\rOverall'))+

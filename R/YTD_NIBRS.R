@@ -62,6 +62,11 @@ NIBRS_YTD<- function( indata
                ,stat="identity")+
       ggtitle(glue("Year-To-Date - {title1}"))+
       theme_economist()+
+        geom_text(
+          aes(label = OffenseCount),
+          colour = "white", size = 3,
+          vjust = 1.5, position = position_dodge(.9)
+        )+  
       scale_fill_manual(values=c('darkblue', 'darkgreen', 'darkred')))
 }
 

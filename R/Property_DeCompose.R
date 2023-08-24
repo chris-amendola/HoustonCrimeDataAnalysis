@@ -1,3 +1,5 @@
+## This script is dependant on Property_Trend code running
+
 agg<-crimes_filtered[,.(Freq=sum(OffenseCount))
                      ,by=c('NIBRSDescription','year_mon')]%>%
   .[,Rolling_12_Month:=frollapply(Freq,12,mean),by=c('NIBRSDescription')]%>%
