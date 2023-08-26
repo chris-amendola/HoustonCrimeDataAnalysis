@@ -76,7 +76,7 @@ ggplot( data=rep_data_prior_agg
               ,x=prior_chg))+
   geom_bar( position="dodge"
             ,stat="identity")+
-  ggtitle(glue("Beat Changes from Prior Year(2022)"))+
+  ggtitle(glue("Counts of Beat-Change Categories from Prior Year(2022)"))+
   theme_economist()
 
 rep_data_base_agg%>%gt()%>%tab_header(
@@ -93,6 +93,9 @@ ggplot( data=rep_data_base_agg
             ,stat="identity")+
   ggtitle(glue("Beat Changes from Base Year(2019)"))+
   theme_economist()
+
+rep_data_prior_agg$Beat_Prec<-round((rep_data_prior_agg$Freq/sum(rep_data_prior_agg$Freq))*100.00,1)
+print(sum(rep_data_prior_agg$Count))
 
 # MAPPING
 #Prep Final
