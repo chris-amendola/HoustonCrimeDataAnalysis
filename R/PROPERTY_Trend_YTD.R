@@ -1,10 +1,3 @@
-property_crimes<-c( 'Motor vehicle theft'
-                   ,'Theft from motor vehicle'
-                   ,'Theft of motor vehicle parts or accessory'
-                   ,'Burglary, Breaking and Entering'
-                   ,'All other larceny'
-                   ,'Arson'
-)
 
 ## Overall Property
 crimes_filtered<-multi_year[NIBRSDescription %chin% property_crimes]%>%

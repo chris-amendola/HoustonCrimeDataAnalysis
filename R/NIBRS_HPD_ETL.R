@@ -21,6 +21,22 @@ sf_use_s2(FALSE)
 where_the_data_is<-'C:/Users/chris/Documents/Random_Nextdoor/My_Crime_Analysis - 05.04.23/Group/Data/HPD_NIBRS/'
 support_dir<-'C:/Users/chris/Documents/GitHub/HoustonCrimeDataAnalysis/DATA/Support/'
 
+NCVS_violent_wts<-list( `2019`=2.15
+                       ,`2020`=2.03 
+                       ,`2021`=1.92
+                       ,`2022`=2.08
+)
+
+NCVS_violent_wts['2023']<-mean(unlist(NCVS_violent_wts))
+
+NCVS_property_wts<-list( `2019`=3.33
+                        ,`2020`=3.94
+                        ,`2021`=2.30
+                        ,`2022`=4.20
+)
+NCVS_property_wts['2023']<-mean(unlist(NCVS_property_wts))
+
+
 label_year<-'2023'
 label_month<-'07'
 to_dt_month<-'07'
@@ -38,6 +54,13 @@ violent_crimes<-c('Aggravated Assault'
                   ,'Forcible rape'
                   ,'Robbery'
                   ,'Murder, non-negligent')
+
+property_crimes<-c( 'Motor vehicle theft'
+                    ,'Theft from motor vehicle'
+                    ,'Theft of motor vehicle parts or accessory'
+                    ,'Burglary, Breaking and Entering'
+                    ,'All other larceny'
+                    ,'Arson')
 
 baseline<-read_excel(glue('{where_the_data_is}2019_NIBRSPublicView.Jan1-Dec31.xlsx'))%>% 
           rename( OffenseCount=`Offense\r\nCount`

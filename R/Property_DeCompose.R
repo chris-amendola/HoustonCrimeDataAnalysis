@@ -1,4 +1,14 @@
-## This script is dependant on Property_Trend code running
+property_crimes<-c( 'Motor vehicle theft'
+                    ,'Theft from motor vehicle'
+                    ,'Theft of motor vehicle parts or accessory'
+                    ,'Burglary, Breaking and Entering'
+                    ,'All other larceny'
+                    ,'Arson'
+                    ,'Shoplifting'
+)
+
+crimes_filtered<-multi_year[NIBRSDescription %chin% property_crimes]
+
 
 agg<-crimes_filtered[,.(Freq=sum(OffenseCount))
                      ,by=c('NIBRSDescription','year_mon')]%>%
