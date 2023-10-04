@@ -1,18 +1,24 @@
-fbi_zips<-c('77077')
-
-
-## Overall Violent
+## Overall Categories
 viol<-multi_year[NIBRSDescription %chin% violent_crimes]
 prop<-multi_year[NIBRSDescription %chin% property_crimes]
 
+#Trim zip to length 5
+viol[,ZIP5:=substr(ZIPCode,1,5)]
+prop[,ZIP5:=substr(ZIPCode,1,5)]
 
+## By Zipcode Look
+v_agg<-viol[,.(Count=sum(OffenseCount))
+            ,by=c( 'ZIP5'
+                  ,'year')]
 
-vio_agg<-viol[ ZIPCode %in% fbi_zips & month(RMSOccurrenceDate)<8
-                    ,.(Count=sum(OffenseCount))
-                    ,by=c( 'ZIPCode'
-                       ,'year')]
+v_tab<-dcast( v_agg 
+             ,ZIP5 ~ year
+             ,value.var=c("Count"))
 
-prp_agg<-prop[ ZIPCode %in% fbi_zips & month(RMSOccurrenceDate)<8
-                     ,.(Count=sum(OffenseCount))
-                     ,by=c( 'ZIPCode'
-                            ,'year')]
+p_agg<-prop[,.(Count=sum(OffenseCount))
+            ,by=c( 'ZIP5'
+                   ,'year')]
+
+p_tab<-dcast( p_agg 
+              ,ZIP5 ~ year
+              ,value.var=c("Count"))

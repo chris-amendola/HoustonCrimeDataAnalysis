@@ -2,10 +2,10 @@ library(readr)
 
 
 #NCVS Analysis
-NCVS_Reporting<-read_csv("C:/Users/chris/Downloads/Percent of violent crime excluding simple assault victimizations by reporting to the police, 1993 to 2021.csv"
+NCVS_Reporting<-read_csv("C:/Users/chris/Downloads/Percent of violent crime excluding simple assault victimizations by reporting to the police, 1993 to 2022.csv"
                          ,skip = 1)%>%
                 filter( (Year>2011)
-                       &(Year<2022)
+                       &(Year<=2022)
                        &(`Reporting to the police`=='Yes'))
 
 ggplot( data=NCVS_Reporting

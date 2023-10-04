@@ -1,11 +1,11 @@
 library(gt)
 
-setwd('C:/Users/chris/Documents/Houston_Crime_Data_Analysis/July2023')
+setwd('C:/Users/chris/Documents/Houston_Crime_Data_Analysis/August2023')
 
 bas_yr='2019'
 pri_yr='2022'
 cur_yr='2023'
-latest_mon='07'
+latest_mon='08'
 
 base_end_dt<-eom(latest_mon,bas_yr)
 
@@ -76,7 +76,8 @@ ggplot( data=rep_data_prior_agg
               ,x=prior_chg))+
   geom_bar( position="dodge"
             ,stat="identity")+
-  ggtitle(glue("Counts of Beat-Change Categories from Prior Year(2022)"))+
+  ggtitle(glue("Beat Changes from Prior Year(2022)"))+
+  labs(x="Direction of Change",y="Number of Beats")+
   theme_economist()
 
 rep_data_base_agg%>%gt()%>%tab_header(
@@ -188,7 +189,7 @@ saveWidget( change_base
 ## DENSITY
 pal <- colorQuantile( palette="RdYlBu"
                     ,domain=final$crime_density
-                    ,n=10
+                    ,n=6
                     ,reverse=TRUE)
 
 dense<-leaflet() %>%

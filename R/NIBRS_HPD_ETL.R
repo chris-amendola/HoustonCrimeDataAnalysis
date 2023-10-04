@@ -38,8 +38,8 @@ NCVS_property_wts['2023']<-mean(unlist(NCVS_property_wts))
 
 
 label_year<-'2023'
-label_month<-'07'
-to_dt_month<-'07'
+label_month<-'08'
+to_dt_month<-'08'
 
 
 districts<-st_read(glue("{support_dir}COH_ADMINISTRATIVE_BOUNDARY_-_MIL.geojson"))%>%
@@ -102,7 +102,7 @@ year3<-read_excel(glue('{where_the_data_is}NIBRSPublicViewDec22.xlsx'))
 min(year3$RMSOccurrenceDate)
 max(year3$RMSOccurrenceDate)
 
-year4<-read_excel(glue('{where_the_data_is}NIBRSPublicViewJul23.xlsx'))
+year4<-read_excel(glue('{where_the_data_is}NIBRSPublicViewAug23.xlsx'))
 
 min(year4$RMSOccurrenceDate)
 max(year4$RMSOccurrenceDate)

@@ -8,15 +8,15 @@ set.seed(3141)
 
 
 crimes_filtered<-multi_year[NIBRSDescription %chin% violent_crimes]%>%
-                .[ (RMSOccurrenceDate>='2023-06-01')
-                  &(RMSOccurrenceDate<='2023-06-30')]%>%
+                .[ (RMSOccurrenceDate>='2023-08-01')
+                  &(RMSOccurrenceDate<='2023-08-31')]%>%
                 .[ (!is.na(MapLongitude))
                   |(!is.na(MapLatitude))]
 
 coords<-scale(crimes_filtered[,.(MapLongitude,MapLatitude)])
 
-grid<-somgrid( xdim=4
-              ,ydim=4
+grid<-somgrid( xdim=5
+              ,ydim=5
               ,topo="hexagonal")
 
 model<-som( coords

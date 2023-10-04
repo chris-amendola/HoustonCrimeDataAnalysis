@@ -8,7 +8,7 @@ ggsave( glue('Property_Trend_{label_month}{label_year}.png')
         ,height=4
         ,width=8)
 
-NIBRS_YTD(indata=crimes_filtered,'Index Property Crimes')
+NIBRS_YTD(indata=crimes_filtered,'Index Property Crimes',latest_mon='08')
 ggsave( glue('Index_Property_YTD_{label_month}{label_year}.png')
         ,height=4
         ,width=8)
@@ -27,10 +27,10 @@ for (icrime in property_crimes) {
           ,height=4
           ,width=8)
   print(NIBRS_YTD( indata=crimes_filtered
-                  ,icrime))
+                  ,icrime,latest_mon='08'))
   ggsave( glue('{icrime}_YTD_{label_month}{label_year}.png')
           ,height=4
-          ,width=8)
+          ,width=8) 
   
   #Premise Eval Latest Year
   prem<-crimes_filtered[year=='2023',.(Freq=sum(OffenseCount)),by=Premise]
@@ -50,7 +50,7 @@ for (icrime in property_crimes) {
 
 ## Mapping by Month
 cur_year<-'2023'
-ytd_months<-c('01','02','03','04','05','06','07')
+ytd_months<-c('01','02','03','04','05','06','07','08')
 
 for (icrime in property_crimes) {
   print(icrime)
