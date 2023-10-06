@@ -189,7 +189,7 @@ saveWidget( change_base
 ## DENSITY
 pal <- colorQuantile( palette="RdYlBu"
                     ,domain=final$crime_density
-                    ,n=6
+                    ,n=10
                     ,reverse=TRUE)
 
 dense<-leaflet() %>%
