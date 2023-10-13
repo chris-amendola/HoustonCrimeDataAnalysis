@@ -55,8 +55,8 @@ prem_ovr$prop_exp<-prem_ovr$pop_freq/sum(prem_ovr$pop_freq)
 prem_chi_pre<-prem_ovr[ beat_fin[Beat=='18F30']
                        ,on=.(prem_oth)]
 
-exp_tab<-prem_chi_pre[,.(prem_oth,prop=prop_exp,cat='EXP')]
-obs_tab<-prem_chi_pre[,.(prem_oth,prop=prop,cat='OBS')]
+exp_tab<-prem_chi_pre[,.(prem_oth,prop=prop_exp,cat='Expected')]
+obs_tab<-prem_chi_pre[,.(prem_oth,prop=prop,cat='Observed')]
 
 plot_pre<-rbindlist(list( exp_tab
                          ,obs_tab)) 

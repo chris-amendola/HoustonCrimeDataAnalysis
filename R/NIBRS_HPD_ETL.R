@@ -7,6 +7,7 @@ library("ggplot2")
 library("ggthemes")
 library("leaflet")
 library('sf')
+library('sfdep')
 library('dplyr')
 library('htmlwidgets')
 
