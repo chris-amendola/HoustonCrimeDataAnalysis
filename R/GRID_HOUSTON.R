@@ -1,7 +1,7 @@
 library(gganimate)
 library(ggspatial)
 library(mapview)
-
+library(RColorBrewer)
 
 #Maybe all 'major crimes' might be interesting for market basket analysis
 
@@ -26,7 +26,7 @@ plot(houston_grid)
 # DATA - Last Complete Year 2022
 data_pre<-multi_year[ (NIBRSDescription %chin% violent_crimes)
                       &(RMSOccurrenceDate>=glue('2023-01-01'))
-                      &(RMSOccurrenceDate<=glue('2023-08-31')),]%>%
+                      &(RMSOccurrenceDate<=glue('2023-09-30')),]%>%
   .[ (!is.na(MapLongitude))
      |(!is.na(MapLatitude))] |>
   st_as_sf( coords=c("MapLongitude","MapLatitude")
@@ -64,7 +64,10 @@ sum_grid$wt<-st_weights(sum_grid$nb)
 
 sum_grid$n_lag<-st_lag(sum_grid$n,sum_grid$nb,sum_grid$wt)
 
+
+pal<-rev(brewer.pal(5,'RdBu'))
 sum_grid%>%ggplot(aes(fill = n_lag)) + 
+  scale_fill_gradientn(colors=pal)+
   geom_sf(lwd = 0.1, color = "white")
 
 # Omnibus Clustering test
@@ -73,9 +76,10 @@ global_g_test(sum_grid$n,sum_grid$nb,sum_grid$wt)
 # Local Cluster detection
 sum_grid$Gi<-local_g_perm(sum_grid$n,sum_grid$nb,sum_grid$wt,nsim=199)
 
+# Visuals
 spots<-sum_grid%>%unnest(Gi)
 
-gg <- spots |> 
+hs_cat <- spots |> 
   select(gi, p_folded_sim) |> 
   mutate(
     classification = case_when(
@@ -91,70 +95,53 @@ gg <- spots |>
     # if we cast to a factor we can make diverging scales easier 
     classification = factor(
       classification,
-      levels = c("Very hot", "Hot", "Somewhat hot",
-                 "Insignificant",
-                 "Somewhat cold", "Cold", "Very cold")
+      levels = c( "Very hot"
+                 ,"Hot"
+                 ,"Somewhat hot"
+                 ,"Insignificant"
+                 ,"Somewhat cold"
+                 ,"Cold"
+                 ,"Very cold")
     )
-  ) |> 
-  ggplot(aes(fill = classification)) +
-  annotation_map_tile()+
-  coord_sf(datum = NA)+
-  geom_sf(color = "black", lwd = 0.1,inherit.aes = FALSE) +
-  scale_fill_brewer(type = "div", palette = 5) +
-  theme_void() +
-  labs(
-    fill = "Hot Spot Classification",
-    title = "Violent Crime Hot Spots Houston- YTD August 2023"
-  )
+  ) 
 
-gg
+# Interactive Map
+hs_cat|> 
+  mapview( zcol='classification'
+          ,alpha.regions=0.5
+          ,col.regions=brewer.pal(6,'RdBu')
+          ,layer.name='Hot-Spot Level')
 
-function(){
-## Emerging Hot-Spot Analysis
-# Create spacetime object called `bos`
+# Static Districts
+hs_cat%>%ggplot(aes(fill = classification)) + 
+  scale_fill_brewer(palette='RdBu')+
+  geom_sf(lwd = 0.1, color = "white")+
+  geom_sf( data=districts
+          ,fill=NA
+          ,linewidth=0.4
+          ,color="black"
+          )+geom_sf_label(data=districts,aes(fill=NULL,label=DISTRICT))+
+  theme( axis.text.x=element_blank() 
+        ,axis.ticks.x=element_blank() 
+        ,axis.text.y=element_blank() 
+        ,axis.ticks.y=element_blank()
+        ,axis.title.x=element_blank()
+        ,axis.title.y=element_blank())
 
-# Summarize Incidents by grid-cell
-# --Set nulls to zeros
-time_series<-incident_cells%>%  
-  filter(grid_id!=4057)%>%
-  group_by(grid_id,year_mon)%>%
-  summarise(n=sum(OffenseCount))%>%
-  replace_na(list(n=0))
+# Static Districts
+hs_cat%>%ggplot(aes(fill = classification)) + 
+  scale_fill_brewer(palette='RdBu')+
+  geom_sf(lwd = 0.1, color = "white")+
+  geom_sf( data=districts
+           ,fill=NA
+           ,linewidth=0.4
+           ,color="black"
+  )+
+  theme( axis.text.x=element_blank() 
+         ,axis.ticks.x=element_blank() 
+         ,axis.text.y=element_blank() 
+         ,axis.ticks.y=element_blank()
+         ,axis.title.x=element_blank()
+         ,axis.title.y=element_blank())
 
-# Geo-Data
-geo_data<-sum_grid[c('grid_id','x')]|>
-  filter(grid_id!=4057) ## Drop Neighborless grid-cell - Empircally derived
-
-# Create Template Grid for Space-time cube
-grid_id<-unique(time_series$grid_id)
-year_mon<-sort(unique(time_series$year_mon))
-
-cube_grid<-expand_grid(grid_id,year_mon)
-
-# Merge aggregate time series to cube template
-pre_cube<-merge( cube_grid
-                ,time_series
-                ,by=c( 'grid_id'
-                      ,'year_mon')
-                ,all.x=TRUE)
-
-pre_cube$n[is.na(pre_cube$n)]<-0
-
-
-# Create Spacetime Cube
-cube<-spacetime( pre_cube
-                ,geo_data
-                ,.loc_col="grid_id"
-                ,.time_col="year_mon")
-
-is_spacetime_cube(cube)
-
-# conduct EHSA
-ehsa <- emerging_hotspot_analysis(
-  x = cube,
-  .var = "n",
-  k = 1,
-  nsim = 9
-)
-
-ehsa}
+##Create Animation Frames
