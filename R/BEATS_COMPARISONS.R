@@ -1,7 +1,7 @@
 bas_yr='2019'
 pri_yr='2022'
 cur_yr='2023'
-latest_mon='08'
+latest_mon='09'
 
 base_end_dt<-eom(latest_mon,bas_yr)
 pri_end_dt<-eom(latest_mon,pri_yr)
@@ -10,7 +10,7 @@ cur_end_dt<-eom(latest_mon,cur_yr)
 ## Overall Violent
 crimes_filtered<-multi_year[ (NIBRSDescription %chin% violent_crimes)
                             &(RMSOccurrenceDate>='2023-01-01')
-                            &(RMSOccurrenceDate<='2023-08-30')]
+                            &(RMSOccurrenceDate<='2023-09-30')]
 
 beats_agg<-crimes_filtered[,.(N=sum(OffenseCount)),by=c('Beat')]
 
@@ -52,7 +52,9 @@ prem_ovr<-pre[,.(pop_freq=sum(OffenseCount))
 
 prem_ovr$prop_exp<-prem_ovr$pop_freq/sum(prem_ovr$pop_freq)
 
-prem_chi_pre<-prem_ovr[ beat_fin[Beat=='18F30']
+ibeat<-'1A40'
+#Beat SpecificS
+prem_chi_pre<-prem_ovr[ beat_fin[Beat==glue('{ibeat}')]
                        ,on=.(prem_oth)]
 
 exp_tab<-prem_chi_pre[,.(prem_oth,prop=prop_exp,cat='Expected')]
@@ -74,14 +76,13 @@ ggplot( data=plot_pre
 chisq.test( prem_chi_pre$Freq
            ,p=prem_chi_pre$prop_exp)
 
-#18F30
 ##-Violent
 crimes_filtered<-multi_year[ (NIBRSDescription %chin% violent_crimes)
-                            &(Beat=='18F30')]%>%
+                            &(Beat==glue('{ibeat}'))]%>%
   .[,NIBRSDescription:='Violent']
 
 NIBRS_Trend(indata=crimes_filtered,'Violent')
-NIBRS_YTD(indata=crimes_filtered,'Beat: 18F30\nViolent')
+NIBRS_YTD(indata=crimes_filtered,glue('Beat: {ibeat}\nViolent'))
 
 crime_YTD<-crimes_filtered[ ( RMSOccurrenceDate>=glue('{bas_yr}-01-01')
                              &RMSOccurrenceDate<=base_end_dt)
@@ -90,17 +91,17 @@ crime_YTD<-crimes_filtered[ ( RMSOccurrenceDate>=glue('{bas_yr}-01-01')
                            |( RMSOccurrenceDate>=glue('{cur_yr}-01-01')
                              &RMSOccurrenceDate<=cur_end_dt),]
 
-y2019<-crime_YTD[ (year=='2019')&(Beat=='18F30')
+y2019<-crime_YTD[ (year=='2019')&(Beat==glue('{ibeat}'))
                        ,.(FREQ=sum(OffenseCount)),by=c("Premise")]
 y2019$prop<-y2019$FREQ/sum(y2019$FREQ)
 y2019$year<-'2019'
 
-y2022<-crime_YTD[ (year=='2022')&(Beat=='18F30')
+y2022<-crime_YTD[ (year=='2022')&(Beat==glue('{ibeat}'))
                         ,.(FREQ=sum(OffenseCount)),by=c("Premise")]
 y2022$prop<-y2022$FREQ/sum(y2022$FREQ)
 y2022$year<-'2022'
 
-y2023<-crime_YTD[ (year=='2023')&(Beat=='18F30')
+y2023<-crime_YTD[ (year=='2023')&(Beat==glue('{ibeat}'))
                         ,.(FREQ=sum(OffenseCount)),by=c("Premise")]
 y2023$prop<-y2023$FREQ/sum(y2023$FREQ)
 y2023$year<-'2023'
@@ -114,7 +115,7 @@ ggplot( data=data_concat
   geom_bar( position="dodge"
             ,stat="identity")+
   coord_flip()+
-  ggtitle(glue("Beat 18F30\n Jan-Jun Violent Crime Incidents"))+
+  ggtitle(glue("Beat {ibeat}\n Jan-Jun Violent Crime Incidents"))+
   theme_economist()+
   scale_fill_manual(values=c('darkblue', 'darkgreen', 'darkred'))
 
@@ -136,13 +137,13 @@ ggplot( data=data_wide
   geom_bar( position="dodge"
             ,stat="identity")+
   coord_flip()+
-  ggtitle(glue("Beat 18F30\n Changes 2022-2023\n Violent Crime Incidents"))+
+  ggtitle(glue("Beat {ibeat}\n Changes 2022-2023\n Violent Crime Incidents"))+
   theme_economist()+
   scale_fill_manual(values=c('darkblue', 'darkgreen', 'darkred'))
 
 ## 18F30 Drill Down Premises
 drill_down<-multi_year[ (NIBRSDescription %chin% violent_crimes)
-                            &(Beat=='18F30')
+                            &(Beat==glue('{ibeat}'))
                             &(Premise=='Parking Lot, Garage')#&(Premise=='Bar, Nightclub')
                             &(year=='2023')]
 

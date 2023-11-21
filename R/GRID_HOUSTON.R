@@ -10,6 +10,7 @@ city<-city_raw$geometry
 #plot(city)
 
 # make a square grid over the countries
+# Grids appear to be 500 meters 
 grd<-st_make_grid( city
                   ,n = 200
                   ,square=FALSE)
@@ -40,6 +41,7 @@ lon_min<-min(data_pre$MapLongitude)
 lon_max<-max(data_pre$MapLongitude)
 
 # Join grid cells to incident data
+#200 Grid - Drop 4057
 incident_cells<-houston_grid%>%  
                 st_as_sf() |> # cast to sf
                 mutate(grid_id=row_number()) |> # create unique ID

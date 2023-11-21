@@ -1,7 +1,7 @@
-setwd('C:/Users/chris/Documents/Houston_Crime_Data_Analysis/September2023')
+setwd('C:/Users/chris/Documents/Houston_Crime_Data_Analysis/October2023')
 
 ## Overall Property
-crimes_filtered<-multi_year[NIBRSDescription %chin% property_crimes]%>%
+crimes_filtered<-multi_year[NIBRSDescription %chin% property_crimes]%>% 
   .[,NIBRSDescription:='Index Property Crimes']
 
 NIBRS_Trend(indata=crimes_filtered,'Index Property Crimes')
@@ -9,7 +9,7 @@ ggsave( glue('Property_Trend_{label_month}{label_year}.png')
         ,height=4
         ,width=8)
 
-NIBRS_YTD(indata=crimes_filtered,'Index Property Crimes',latest_mon='09')
+NIBRS_YTD(indata=crimes_filtered,'Index Property Crimes',latest_mon='10')
 ggsave( glue('Index_Property_YTD_{label_month}{label_year}.png')
         ,height=4
         ,width=8)
@@ -28,7 +28,7 @@ for (icrime in property_crimes) {
           ,height=4
           ,width=8)
   print(NIBRS_YTD( indata=crimes_filtered
-                  ,icrime,latest_mon='08'))
+                  ,icrime,latest_mon='10'))
   ggsave( glue('{icrime}_YTD_{label_month}{label_year}.png')
           ,height=4
           ,width=8) 
@@ -51,7 +51,7 @@ for (icrime in property_crimes) {
 
 ## Mapping by Month
 cur_year<-'2023'
-ytd_months<-c('01','02','03','04','05','06','07','08','09')
+ytd_months<-c('01','02','03','04','05','06','07','08','09','10')
 
 for (icrime in property_crimes) {
   print(icrime)

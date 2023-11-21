@@ -39,8 +39,8 @@ NCVS_property_wts['2023']<-mean(unlist(NCVS_property_wts))
 
 
 label_year<-'2023'
-label_month<-'09'
-to_dt_month<-'09'
+label_month<-'10'
+to_dt_month<-'10'
 
 
 districts<-st_read(glue("{support_dir}COH_ADMINISTRATIVE_BOUNDARY_-_MIL.geojson"))%>%
@@ -103,7 +103,7 @@ year3<-read_excel(glue('{where_the_data_is}NIBRSPublicViewDec22.xlsx'))
 min(year3$RMSOccurrenceDate)
 max(year3$RMSOccurrenceDate)
 
-year4<-read_excel(glue('{where_the_data_is}NIBRSPublicViewSep23.xlsx'))
+year4<-read_excel(glue('{where_the_data_is}NIBRSPublicViewOct23.xlsx'))
 
 min(year4$RMSOccurrenceDate)
 max(year4$RMSOccurrenceDate)
@@ -162,8 +162,6 @@ ETL_VALIDATE<-function(){
       #,caption = "Caption"
     )
   
-  
-
     qa_year_by_year_mon<-multi_year%>%group_by(year_mon,year)%>%summarize(freq=n())
     
     YTD_VOLUMES<-multi_year[ (NIBRSDescription %chin% violent_crimes),]%>%
@@ -186,5 +184,5 @@ ETL_VALIDATE<-function(){
     }
 
 ## Manual Housekeeping
-remove(list=c('YTD_VOLUMES'))
-remove(list=c('baseline','year1','year2','year3','year4'))
+#remove(list=c('YTD_VOLUMES'))
+#remove(list=c('baseline','year1','year2','year3','year4'))

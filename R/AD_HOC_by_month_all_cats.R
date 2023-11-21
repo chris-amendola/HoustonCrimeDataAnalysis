@@ -48,18 +48,17 @@ for (icrime in all_desc$NIBRSDescription) {
         )
   
 
+  print(ggplot( data=plot_prep
+                ,aes( y=z
+                      ,x=year_mon
+                ))+
+          geom_bar( position="dodge"
+                    ,stat="identity")+
+          ggtitle(glue("SDs - {icrime}"))+
+          theme_economist())
+
   if(1==2){ 
-    
-   print(ggplot( data=plot_prep
-                  ,aes( y=z
-                        ,x=year_mon
-                  ))+
-            geom_bar( position="dodge"
-                      ,stat="identity")+
-            ggtitle(glue("SDs - {icrime}"))+
-            theme_economist())
-    
-    
+  
     print(ggplot( data=plot_prep
                   ,aes( y=change1
                         ,x=year_mon
