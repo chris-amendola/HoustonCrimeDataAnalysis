@@ -27,7 +27,7 @@ plot(houston_grid)
 # DATA - Last Complete Year 2022
 data_pre<-multi_year[ (NIBRSDescription %chin% violent_crimes)
                       &(RMSOccurrenceDate>=glue('2023-01-01'))
-                      &(RMSOccurrenceDate<=glue('2023-09-30')),]%>%
+                      &(RMSOccurrenceDate<=glue('2023-10-30')),]%>%
   .[ (!is.na(MapLongitude))
      |(!is.na(MapLatitude))] |>
   st_as_sf( coords=c("MapLongitude","MapLatitude")

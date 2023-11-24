@@ -91,3 +91,30 @@ for (icrime in all_desc$NIBRSDescription) {
 
   }
 }  
+
+## Look at specific crime
+
+icrime<-'Murder, non-negligent'
+crimes_filtered<-multi_year[NIBRSDescription==icrime]
+
+print(nrow(crimes_filtered) )
+
+print( NIBRS_YTD(indata=crimes_filtered
+                 ,icrime,latest_mon='10'))
+
+icrime<-'Aggravated Assault'
+crimes_filtered<-multi_year[NIBRSDescription==icrime]
+
+print(nrow(crimes_filtered) )
+
+print( NIBRS_YTD(indata=crimes_filtered
+                 ,icrime,latest_mon='10'))
+
+
+
+perc_change<-function(current,historical){
+  
+  return((current-historical)/historical)
+  
+}
+

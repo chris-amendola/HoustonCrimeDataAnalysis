@@ -6,6 +6,11 @@ eom<-function( month
                               ,month=month
                               ,day=base_day)),'month')-days(1))
 }
+z_poi<-function(current,historical){
+  
+  return(2*(sqrt(current)-sqrt(historical)))
+  
+}
 
 test_eom<-function(){
   m='06'
@@ -53,6 +58,11 @@ NIBRS_YTD<- function( indata
     
     plot_prep<- rbindlist(list(bas_agg,pri_agg,cur_agg))  
     print(plot_prep)
+    cur_ct<-plot_prep[Year==cur_yr,.(OffenseCount)][[1]]
+    pri_ct<-plot_prep[Year==pri_yr,.(OffenseCount)][[1]]
+    cur_z_poi<-z_poi(cur_ct,pri_ct)
+    cur_cent<-pnorm(cur_z_poi)
+    print(glue('Z-Poisson For {cur_yr} to {pri_yr}: {cur_z_poi} - {cur_cent}'))
     
     return(ggplot( data=plot_prep
            ,aes( y=OffenseCount
