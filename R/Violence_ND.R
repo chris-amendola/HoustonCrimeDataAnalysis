@@ -25,7 +25,7 @@ crimes_filtered<-multi_year[NIBRSDescription %chin% violent_crimes]
 
 ## Individual Crimes
 for (icrime in violent_crimes) {
-  print(icrime)
+  print(icrime)  
   crimes_filtered<-multi_year[NIBRSDescription==icrime]
   print(nrow(crimes_filtered) )
   

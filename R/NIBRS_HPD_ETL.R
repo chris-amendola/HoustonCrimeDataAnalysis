@@ -184,5 +184,5 @@ ETL_VALIDATE<-function(){
     }
 
 ## Manual Housekeeping
-#remove(list=c('YTD_VOLUMES'))
-#remove(list=c('baseline','year1','year2','year3','year4'))
+remove(list=c('YTD_VOLUMES'))
+remove(list=c('baseline','year1','year2','year3','year4'))

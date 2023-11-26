@@ -1,7 +1,8 @@
 
 
 NIBRS_Trend<- function( indata
-                       ,title1='title1') {
+                       ,title1='title1'
+                       ,sub_title='Overall') {
 
   data<-indata[,.(OffenseCount=sum(OffenseCount)),by=(year_mon)]%>%
         .[order(year_mon)]%>%
@@ -16,7 +17,7 @@ NIBRS_Trend<- function( indata
   end_value<-round(data[year_mon==max(year_mon)][[1,3]],2)
   
   return(ggplot(data=data, aes(x=year_mon, y=Rolling_12_Month, group=1))+
-        ggtitle(glue('{title1}\n\rOverall'))+
+        ggtitle(glue('{title1}\n\r{sub_title}'))+
         geom_line(color="darkblue", linewidth=1, alpha=0.9, linetype=1)+
         geom_hline(yintercept=start_val, linetype="dashed", color = "darkgreen")+
         geom_hline(yintercept=end_value, linetype="dashed", color = "red")+
