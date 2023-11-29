@@ -2,11 +2,11 @@ library(gt)
 
 range<-500
 
-#4955 BEECHNUT STREET
-
-location<-multi_year[(  StreetName=='BEECHNUT' 
-                            & StreetType=='ST'
-                            & StreetNo==4955
+#4955 BEECHNUT STREET 
+#4807 Pin Oak Park, Houston, TX 77081
+location<-multi_year[(  StreetName=='PIN OAK' 
+                            & StreetType=='PRK'
+                            & StreetNo==4807
                             & year==2023)]
 
 min(location$MapLatitude ,na.rm=TRUE)
@@ -67,7 +67,7 @@ geo_plot(datax)
 
 # Tabular Report
 area_sum%>%gt()%>%tab_header(
-  title=glue('HPD Incident Reports 2023 (January-September)'),
+  title=glue('HPD Incident Reports 2023 (January-October)'),
   subtitle=glue('{sum(area_sum$IncidentCount)} Incidents - {sum(area_sum$OffenseCount)} Offenses'))#%>%
   #cols_label( base_chg=md("**ChangeDirection**")
   #            ,Freq=md("**Count**")
