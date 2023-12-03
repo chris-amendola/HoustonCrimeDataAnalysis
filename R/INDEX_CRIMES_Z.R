@@ -63,14 +63,27 @@ stand_report<-function( data
                     ,NIBRSDescription~year
                     ,value.var = "Freq")
     
+    #wide_yr$`2023`<-wide_yr$`2023`*.952
+    
     wide_yr$z_poi<-z_poi(wide_yr$`2023`,wide_yr$`2022`)
     wide_yr$Percent_Change<-perc_change(wide_yr$`2023`,wide_yr$`2022`)
     wide_yr$Difference<-wide_yr$`2023`-wide_yr$`2022`
     
-    wide_yr<-wide_yr[,Change:=fcase(z_poi<=-3, "DOWN",z_poi>=3, "UP",default="No Change")]
+    wide_yr<-wide_yr[,Label:=fcase( z_poi<=-3
+                                     ,"DOWN"
+                                     ,z_poi>=3
+                                     ,"UP"
+                                     ,default="No Change")]
     
+    wide_yr<-wide_yr[,Change:=fcase( z_poi<=-3
+                                    ,md("**")
+                                    ,z_poi>=3
+                                    ,md("**")
+                                    ,default=md("--"))]
     
-    return(wide_yr[,.(NIBRSDescription,`2022`,`2023`,Difference,Percent_Change,z_poi,Change)])
+    wide_yr$Percent_Change<-paste0(wide_yr$Percent_Change,' ',wide_yr$Change)
+    
+    return(wide_yr[,.(NIBRSDescription,`2022`,`2023`,Difference,Percent_Change,z_poi,Change,Label)])
 }
 
 index_data<-stand_report( multi_year
@@ -79,17 +92,45 @@ index_data<-stand_report( multi_year
                          ,cur_yr=2023
                          ,latest_mon='10')
 
-index_data[,.(NIBRSDescription,`2022`,`2023`,Difference,Percent_Change,Change)]%>%
+index_data[,.(NIBRSDescription,`2022`,`2023`,Difference,Percent_Change)]%>%
   gt(rowname_col = "NIBRSDescription")%>%
   fmt_number( columns=c(`2022`,`2023`,`Difference`)
              ,decimals=0
              ,use_seps=TRUE)%>%
   tab_header( title='Index Crimes Standardized Report'
-            ,subtitle=md('**YTD Incidents**'))%>%
+            ,subtitle=md('**YTD Incidents(Jan-Oct 2022 vs 2023)**'))%>%
   cols_label( NIBRSDescription=md("**Category**")
-              ,Percent_Change=md("**% Change**")
-              ,Change=md("**Change**"))%>%
+              ,Percent_Change=md("**% Change**"))%>%
   tab_row_group(label=md("**Societal**"),rows=qol_crimes)%>%
   tab_row_group(label=md("**Property**"),rows=prp_crimes)%>%
-  tab_row_group(label=md("**Violent**"),rows=vio_crimes)
+  tab_row_group(label=md("**Violent**"),rows=vio_crimes)%>%
+  tab_footnote(
+    footnote = "** Indicates Change is beyond expected variation",
+    locations = cells_column_labels(columns = Percent_Change)
+  )%>%
+  tab_footnote(
+    footnote = "-- Indicates Change is consistent with random variation",
+    locations = cells_column_labels(columns = Percent_Change)
+  )
 
+cat_row_nums<-index_data[,.(NIBRSDescription,Label,z_poi)]%>%
+                        .[order(z_poi)]%>%
+                        .[,id:=seq_len(.N), by = Label]%>%
+                        .[,id:=rowid(Label)]
+ 
+cat_cols<-dcast( cat_row_nums
+                ,id~Label
+                ,value.var="NIBRSDescription")
+
+cat_cols[is.na(cat_cols)]<-' '
+
+cat_cols[,.(UP,DOWN,`No Change`)]%>%gt()%>%
+  tab_header( title='Index Crimes Standardized Report'
+             ,subtitle=md('**YTD Incidents(Jan-Oct) 2022 vs 2023**'))%>%
+  cols_width(everything() ~ px(220))%>%
+  tab_options(
+    data_row.padding = px(15),
+    summary_row.padding = px(15), # A bit more padding for summaries
+    row_group.padding = px(15)    # And even more for our groups
+  ) %>%
+  opt_stylize(style = 6, color = 'gray')
