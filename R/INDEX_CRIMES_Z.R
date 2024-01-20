@@ -1,4 +1,13 @@
 library(gt)
+library(htmlwidgets)
+library(DBI)
+library(glue)
+library(tidyverse)
+library(data.table)
+
+setwd('C:/Users/chris/Documents/Houston_Crime_Data_Analysis/DEVEL')
+where_the_data_is<-'C:/Users/chris/Documents/Houston_Crime_Data_Analysis/DATA'
+db_name<-'HPD_NIBRS'
 
 z_poi<-function(current,historical){
   
@@ -36,13 +45,13 @@ prp_crimes<-c( 'Motor vehicle theft'
 qol_crimes<-c( 'Weapon law violations'
               ,'Shoplifting')
 #Put Total List Together - for single data.table and print table
-index_crimes<-c(violent_crimes,c(prp_crimes,qol_crimes))
+index_crimes<-c(vio_crimes,c(prp_crimes,qol_crimes))
   
 stand_report<-function( data
                        ,crime_list
                        ,pri_yr=2022
                        ,cur_yr=2023
-                       ,latest_mon='10'
+                       ,latest_mon='12'
                        ,title='STANDARD POISSON SCORES'){
     
     
@@ -86,19 +95,27 @@ stand_report<-function( data
     return(wide_yr[,.(NIBRSDescription,`2022`,`2023`,Difference,Percent_Change,z_poi,Change,Label)])
 }
 
+inc_db<- dbConnect( RSQLite::SQLite()
+                    ,glue('{where_the_data_is}/{db_name}')
+                    ,extended_types = TRUE)
+
+multi_year<-setDT(dbReadTable(inc_db, 'multi_year'))
+
+dbDisconnect(inc_db)
+
 index_data<-stand_report( multi_year
                          ,index_crimes
                          ,pri_yr=2022
                          ,cur_yr=2023
-                         ,latest_mon='10')
+                         ,latest_mon='12')
 
 index_data[,.(NIBRSDescription,`2022`,`2023`,Difference,Percent_Change)]%>%
   gt(rowname_col = "NIBRSDescription")%>%
   fmt_number( columns=c(`2022`,`2023`,`Difference`)
              ,decimals=0
              ,use_seps=TRUE)%>%
-  tab_header( title='Index Crimes Standardized Report'
-            ,subtitle=md('**YTD Incidents(Jan-Oct 2022 vs 2023)**'))%>%
+  tab_header( title='Index Crimes Standardized Report - Details'
+            ,subtitle=md('**Full Year Incidents(2022 vs 2023)**'))%>%
   cols_label( NIBRSDescription=md("**Category**")
               ,Percent_Change=md("**% Change**"))%>%
   tab_row_group(label=md("**Societal**"),rows=qol_crimes)%>%
@@ -109,7 +126,7 @@ index_data[,.(NIBRSDescription,`2022`,`2023`,Difference,Percent_Change)]%>%
     locations = cells_column_labels(columns = Percent_Change)
   )%>%
   tab_footnote(
-    footnote = "-- Indicates Change is consistent with random variation",
+    footnote = "-- Indicates Change is consistent with expected variation",
     locations = cells_column_labels(columns = Percent_Change)
   )
 
@@ -124,9 +141,9 @@ cat_cols<-dcast( cat_row_nums
 
 cat_cols[is.na(cat_cols)]<-' '
 
-cat_cols[,.(UP,DOWN,`No Change`)]%>%gt()%>%
+cat_cols[,.(UP,DOWN)]%>%gt()%>%
   tab_header( title='Index Crimes Standardized Report'
-             ,subtitle=md('**YTD Incidents(Jan-Oct) 2022 vs 2023**'))%>%
+             ,subtitle=md('**Full Year Incidents 2022 vs 2023**'))%>%
   cols_width(everything() ~ px(220))%>%
   tab_options(
     data_row.padding = px(15),

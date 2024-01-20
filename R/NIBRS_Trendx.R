@@ -3,7 +3,7 @@
 NIBRS_Trend<- function( indata
                        ,title1='title1'
                        ,sub_title='Overall') {
-
+  
   data<-indata[,.(OffenseCount=sum(OffenseCount)),by=(year_mon)]%>%
         .[order(year_mon)]%>%
         .[,Rolling_12_Month:=frollapply(OffenseCount,12,mean),]%>%

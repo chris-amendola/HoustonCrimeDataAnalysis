@@ -1,4 +1,6 @@
-setwd('C:/Users/chris/Documents/Houston_Crime_Data_Analysis/September2023')
+#https://help.healthycities.org/hc/en-us/articles/233420187-Mann-Kendall-test-for-trend-overview
+
+setwd('C:/Users/chris/Documents/Houston_Crime_Data_Analysis/October2023')
 
 # By Year-Month
 data<-multi_year[year>2019,.(nrows=.N),by=c('year_mon')]

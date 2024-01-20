@@ -1,12 +1,16 @@
 library(gt)
+setwd('C:/Users/chris/Documents/Houston_Crime_Data_Analysis/October2023')
 
-range<-500
+range<-805
 
 #4955 BEECHNUT STREET 
 #4807 Pin Oak Park, Houston, TX 77081
-location<-multi_year[(  StreetName=='PIN OAK' 
-                            & StreetType=='PRK'
-                            & StreetNo==4807
+#5331 Beverly Hill St
+location_desc<-'Chateaux Dijon Apartments'
+
+location<-multi_year[(  StreetName=='BEVERLY HILL' 
+                            & StreetType=='ST'
+                            & StreetNo==5331
                             & year==2023)]
 
 min(location$MapLatitude ,na.rm=TRUE)
@@ -15,14 +19,21 @@ max(location$MapLatitude ,na.rm=TRUE)
 min(location$MapLongitude ,na.rm=TRUE)
 max(location$MapLongitude ,na.rm=TRUE)
 #-----------#
-
+# Need to convert this to a function
 #-- Look for nearby --#
 # Get long and lat for the address
 loci_lat<-mean(location$MapLatitude ,na.rm=TRUE)
 loci_lon<-mean(location$MapLongitude ,na.rm=TRUE)
 # Set Manual
-#-loci_lat<-29.685243003232415
-#-loci_lon<- -95.47805340848808
+# Greens Point Mall
+# 29.94626, -95.41173
+# Galleria Mall
+# 29.740042315395527, -95.46427358096552
+#-------#
+# 29.xxxx
+#loci_lat<-29.740042315395527
+# -95.xxxx
+#loci_lon<--95.46427358096552
 
 # Get degrees for distance around the location coords
 lat_range<-range/111111
@@ -66,11 +77,7 @@ datax<-st_join( plot_map
 geo_plot(datax)
 
 # Tabular Report
-area_sum%>%gt()%>%tab_header(
-  title=glue('HPD Incident Reports 2023 (January-October)'),
-  subtitle=glue('{sum(area_sum$IncidentCount)} Incidents - {sum(area_sum$OffenseCount)} Offenses'))#%>%
-  #cols_label( base_chg=md("**ChangeDirection**")
-  #            ,Freq=md("**Count**")
-  #            ,Count=md("**Offense Count**")) 
-
-#SAVE A CSV
+area_sum[order(-IncidentCount)]%>%gt()%>%tab_header(
+  title=html(glue("HPD Incident Reports 2023 (January-October)<br>{location_desc} (Square Mile)")),
+  subtitle=glue('{sum(area_sum$IncidentCount)} Incidents - {sum(area_sum$OffenseCount)} Offenses'))%>%
+  gtsave("ADDR_REPORT.png", expand = 10)

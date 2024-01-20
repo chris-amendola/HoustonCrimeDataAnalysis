@@ -1,3 +1,4 @@
+
 library("readxl")
 library("glue")
 library("tidyverse")
@@ -10,6 +11,7 @@ library('sf')
 library('sfdep')
 library('dplyr')
 library('htmlwidgets')
+library('DBI')
 
 setwd('C:/Users/chris/Documents/GitHub/HoustonCrimeDataAnalysis/R')
 
@@ -19,8 +21,9 @@ source('GEOPLOT.R')
 
 sf_use_s2(FALSE)
 
-where_the_data_is<-'C:/Users/chris/Documents/Random_Nextdoor/My_Crime_Analysis - 05.04.23/Group/Data/HPD_NIBRS/'
-support_dir<-'C:/Users/chris/Documents/GitHub/HoustonCrimeDataAnalysis/DATA/Support/'
+where_the_data_is<-'C:/Users/chris/Documents/Houston_Crime_Data_Analysis/November2023/data/'
+# Was 'C:/Users/chris/Documents/Random_Nextdoor/My_Crime_Analysis - 05.04.23/Group/Data/HPD_NIBRS/'
+support_dir<-'C:/Users/chris/Documents/Houston_Crime_Data_Analysis/DATA/Support/'
 
 NCVS_violent_wts<-list( `2019`=2.15
                        ,`2020`=2.03 
@@ -39,8 +42,8 @@ NCVS_property_wts['2023']<-mean(unlist(NCVS_property_wts))
 
 
 label_year<-'2023'
-label_month<-'10'
-to_dt_month<-'10'
+label_month<-'11'
+to_dt_month<-'11'
 
 
 districts<-st_read(glue("{support_dir}COH_ADMINISTRATIVE_BOUNDARY_-_MIL.geojson"))%>%
@@ -64,13 +67,13 @@ property_crimes<-c( 'Motor vehicle theft'
                     ,'Arson')
 
 baseline<-read_excel(glue('{where_the_data_is}2019_NIBRSPublicView.Jan1-Dec31.xlsx'))%>% 
-          rename( OffenseCount=`Offense\r\nCount`
-                 ,RMSOccurrenceDate=`Occurrence\r\nDate`
-                 ,ZIPCode=`ZIP Code`
-                 ,StreetType=`Street\r\nType`
-                 ,RMSOccurrenceHour=`Occurrence\r\nHour`
-                 ,NIBRSClass=`NIBRS\r\nClass`
-                 ,StreetNo=`Block Range`)
+  rename( OffenseCount=`Offense\r\nCount`
+          ,RMSOccurrenceDate=`Occurrence\r\nDate`
+          ,ZIPCode=`ZIP Code`
+          ,StreetType=`Street\r\nType`
+          ,RMSOccurrenceHour=`Occurrence\r\nHour`
+          ,NIBRSClass=`NIBRS\r\nClass`
+          ,StreetNo=`Block Range`)
 baseline$MapLongitude<-NA
 baseline$MapLatitude<-NA
 
@@ -78,13 +81,13 @@ min(baseline$RMSOccurrenceDate)
 max(baseline$RMSOccurrenceDate)
 
 year1<-read_excel(glue('{where_the_data_is}NIBRSPublicView.Jan1-Dec31-2020.xlsx'))%>% 
-       rename( OffenseCount=`Offense\r\nCount`
-              ,RMSOccurrenceDate=`Occurrence\r\nDate`
-              ,ZIPCode=`ZIP Code`
-              ,StreetType=`Street\r\nType`
-              ,RMSOccurrenceHour=`Occurrence\r\nHour`
-              ,NIBRSClass=`NIBRS\r\nClass`
-              ,StreetNo=`Block Range`)
+  rename( OffenseCount=`Offense\r\nCount`
+          ,RMSOccurrenceDate=`Occurrence\r\nDate`
+          ,ZIPCode=`ZIP Code`
+          ,StreetType=`Street\r\nType`
+          ,RMSOccurrenceHour=`Occurrence\r\nHour`
+          ,NIBRSClass=`NIBRS\r\nClass`
+          ,StreetNo=`Block Range`)
 year1$MapLongitude<-NA
 year1$MapLatitude<-NA
 
@@ -103,7 +106,7 @@ year3<-read_excel(glue('{where_the_data_is}NIBRSPublicViewDec22.xlsx'))
 min(year3$RMSOccurrenceDate)
 max(year3$RMSOccurrenceDate)
 
-year4<-read_excel(glue('{where_the_data_is}NIBRSPublicViewOct23.xlsx'))
+year4<-read_excel(glue('{where_the_data_is}NIBRSPublicViewNov23.xlsx'))
 
 min(year4$RMSOccurrenceDate)
 max(year4$RMSOccurrenceDate)
@@ -112,7 +115,7 @@ max(year4$RMSOccurrenceDate)
 multi_year<-rbind(baseline,year1,year2,year3,year4)%>%
             mutate(year_mon=floor_date(RMSOccurrenceDate,'month'))
 
-multi_year$year<-year(multi_year$RMSOccurrenceDate)
+multi_year$year<-year(multi_year$'RMSOccurrenceDate')
 multi_year$Overall<-'OverAll'
 
 all_desc<-multi_year%>%group_by(NIBRSDescription)%>%summarize(Freq=sum(OffenseCount))
@@ -182,7 +185,14 @@ ETL_VALIDATE<-function(){
                   ,y=freq))+
       geom_bar(stat="identity")
     }
+## DB LOAD
+## NEW DB PER-MONTH, or overall
+#mydb <- dbConnect(RSQLite::SQLite(), "")
+#dbWriteTable(mydb, "mtcars", mtcars)
+#dbWriteTable(mydb, "iris", iris)
+#dbListTables(mydb)
+#dbDisconnect(mydb)
 
 ## Manual Housekeeping
-remove(list=c('YTD_VOLUMES'))
-remove(list=c('baseline','year1','year2','year3','year4'))
+#remove(list=c('YTD_VOLUMES'))
+#remove(list=c('baseline','year1','year2','year3','year4'))

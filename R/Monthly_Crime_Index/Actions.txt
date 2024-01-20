@@ -1,0 +1,42 @@
+Process:
+  Switch to Direct from links access of data.
+  (Look up R solution)
+
+Code Block:
+library(readxl)
+url <- "https://www.houstontx.gov/police/cs/xls/NIBRSPublicView2023.xlsx"
+destfile <- "NIBRSPublicView2023.xlsx"
+curl::curl_download(url, destfile)
+NIBRSPublicView2023 <- read_excel(destfile)
+View(NIBRSPublicView2023)
+
+  Load to SQLite Db
+  (Maybe this is SQLite solution)
+  -Separate year tables
+  -Multi-year Table
+ 
+Some kind of Dashboard or online widget?
+
+
+Reports:
+
+  For each crime type:
+  -Last Month to current
+  -Same month last year
+  - Jan-Jun: Trend- Line 12-Month Rolling Average
+    Jul-Dec: YTD comparison
+
+  -Geographical type analysis possibilities:
+  -- By HPD Beats
+  -- Grid Map Hot-Spots
+
+  Possible AD-HOC Ideas:
+  -Simple decomposition of Time series from types
+  
+
+Questions:
+
+  How do I best leverage reddit mechanics?
+  ?City Of Houston Crime Data Analysis?
+  ?Monthly Index Crime Report?
+

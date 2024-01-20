@@ -1,7 +1,7 @@
 bas_yr='2019'
 pri_yr='2022'
 cur_yr='2023'
-latest_mon='09'
+latest_mon='11'
 
 base_end_dt<-eom(latest_mon,bas_yr)
 pri_end_dt<-eom(latest_mon,pri_yr)
@@ -10,13 +10,14 @@ cur_end_dt<-eom(latest_mon,cur_yr)
 ## Overall Violent
 crimes_filtered<-multi_year[ (NIBRSDescription %chin% violent_crimes)
                             &(RMSOccurrenceDate>='2023-01-01')
-                            &(RMSOccurrenceDate<='2023-09-30')]
+                            &(RMSOccurrenceDate<='2023-11-30')]
 
-beats_agg<-crimes_filtered[,.(N=sum(OffenseCount)),by=c('Beat')]
+beats_agg<-crimes_filtered[,.(N=sum(OffenseCount))
+                           ,by=c('Beat')]
 
 pre<-setDT(crimes_filtered)
 
-# Recode Premise
+# Recode Premise 
 pre[,prem_oth:=ifelse( Premise %in% c( 'Residence, Home (Includes Apartment)'
                                       ,'Parking Lot, Garage'
                                       ,'Highway, Road, Street, Alley'
@@ -45,6 +46,9 @@ ggplot( data=beat_fin
 prem_xtab<-dcast( beat_fin
                   ,Beat~prem_oth
                   ,value.var = c("prop"))
+cols
+prem_xtab[,(names(prem_xtab)):=lapply(.SD, nafill,fill=0)
+    ,.SDcols = cols]
 
 ## Overall Houston Recat Premise
 prem_ovr<-pre[,.(pop_freq=sum(OffenseCount))
@@ -72,6 +76,9 @@ ggplot( data=plot_pre
   ggtitle(glue("Year-To-Date"))+
   theme_economist()+
   scale_fill_manual(values=c('darkblue', 'darkgreen', 'darkred'))
+
+## Make sure the chi-squared proportions sum to 1
+sum(prem_chi_pre$prop_exp)
 
 chisq.test( prem_chi_pre$Freq
            ,p=prem_chi_pre$prop_exp)
@@ -124,9 +131,9 @@ data_wide<-dcast( data_concat
                   ,Premise~year
                   ,value.var=c( 'FREQ'
                                 ,"prop"))
-cols = c('FREQ_2019','FREQ_2022','FREQ_2023')
-data_wide[,(cols):=lapply(.SD, nafill,fill=0)
-          ,.SDcols = cols]
+col_list<-c('FREQ_2019','FREQ_2022','FREQ_2023')
+data_wide[,(col_list):=lapply(.SD, nafill,fill=0)
+          ,.SDcols = col_list]
  
 data_wide$diff_22<-data_wide$FREQ_2023-data_wide$FREQ_2022
 

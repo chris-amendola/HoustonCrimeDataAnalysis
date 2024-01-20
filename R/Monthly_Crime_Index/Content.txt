@@ -1,0 +1,12 @@
+Once a Month Report on specific 'index' crimes, as reported by the Houston Police Department in their publicaly posted crime incident data (web ref).
+
+Current index crime categories 
+
+Violent crimes:
+Property crimes:
+Societal crimes:
+
+January Through June reporting will be a comparison the the latest available month to the prior months counts, the latest available months counts to the same month last year, and the 12-Month Rolling average trendline. July to December the trend-line report will be replaced by a comparision of Year-to-Date counts, current year to last.
+
+
+
