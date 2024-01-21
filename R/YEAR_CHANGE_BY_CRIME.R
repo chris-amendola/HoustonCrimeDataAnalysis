@@ -1,4 +1,3 @@
-setwd('C:/Users/chris/Documents/Houston_Crime_Data_Analysis/DEVEL')
 
 agg<-multi_year[NIBRSDescription %in% violent_crimes,.(OffenseCount=sum(OffenseCount))
                 ,by=c('year')]
